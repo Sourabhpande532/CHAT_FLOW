@@ -93,7 +93,7 @@ server.listen(PORT, () =>
 );
 
 /* 
-STUDY:Point
+STUDY:
 LET"S Implement the socket.io connection
    First install: npm install socket.io
    Then bring server of socket.io
