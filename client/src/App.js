@@ -2,7 +2,7 @@ import './App.css';
 
 function App() {
   return (
-    <div>Demo</div>
+    <div>Adding chat component</div>
   );
 }
 
