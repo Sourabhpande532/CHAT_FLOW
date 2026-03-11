@@ -1,14 +1,17 @@
 import { useState } from "react";
 import "./App.css";
+import { Toaster } from "react-hot-toast";
 import { Chat } from "./components/Chat";
 import { Register } from "./components/Register";
 import { Login } from "./components/Login";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.js";
 
 function App() {
   const [user, setUser] = useState(null);
   return (
     <div className='app'>
-      <h1>Chat app</h1>
+      <Toaster position='top-center' reverseOrder={false} />
       {!user ? (
         <div className='container mt-5 text-center'>
           <div className='row'>
