@@ -7,6 +7,8 @@ const authRoutes = require("./routes/auth");
 const { Server } = require("socket.io");
 const Messages = require("./models/Messages");
 const User = require("./models/User");
+const dns = require("dns");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 dotenv.config();
 const app = express();

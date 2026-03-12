@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Toaster } from "react-hot-toast";
-import { Chat } from "./components/Chat";
+import { Chat } from "./components/chat/Chat";
 import { Register } from "./components/Register";
 import { Login } from "./components/Login";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,7 +24,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <Chat />
+        <Chat user={user} />
       )}
     </div>
   );
