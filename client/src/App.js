@@ -4,8 +4,8 @@ import { Toaster } from "react-hot-toast";
 import { Chat } from "./components/chat/Chat";
 import { Register } from "./components/Register";
 import { Login } from "./components/Login";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.js";
+import "bootstrap/dist/js/bootstrap.min.js";
+import "bootstrap/dist/css/bootstrap.min.css"
 
 function App() {
   const [user, setUser] = useState(null);

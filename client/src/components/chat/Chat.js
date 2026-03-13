@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useEffect, useState } from "react";
-import "./chat.css"
+import "./chat.css";
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
   console.log(users);
@@ -28,7 +28,6 @@ const Chat = ({ user }) => {
           </div>
         ))}
       </div>
-
     </div>
   );
 };
