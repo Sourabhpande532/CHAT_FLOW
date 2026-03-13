@@ -55,7 +55,6 @@ io.on("connection", (socket) => {
 });
 
 // TO RECEIVEED Messages list for the frontend need to write get request for messages & users so can see list on frontend
-
 app.get("/messages", async (req, res) => {
   const { sender, receiver } = req.query;
   try {

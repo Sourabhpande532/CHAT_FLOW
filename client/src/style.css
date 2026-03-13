@@ -8,3 +8,13 @@ body {
     text-align: center;
     margin: 20px;
 }
+
+.chat-container {
+    max-width: 900px;
+    min-height: 60vh;
+    background: #fff;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
