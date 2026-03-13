@@ -6,11 +6,11 @@ import "./chat.css";
 import { MessageList } from "../MessageList";
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
-  // WITH WHOM YOU"R CHATTING 
+  // WITH WHOM YOU"R CHATTING
   const [currentChat, setCurrentChat] = useState(null);
-  // SENDER & RECEIVER COLLECTION MSGs 
+  // SENDER & RECEIVER COLLECTION MSGs
   const [message, setMessage] = useState([]);
-  // USER INTERACTION MSG TYPES 
+  // USER INTERACTION MSG TYPES
   const [currentMessage, setCurrentMessage] = useState("");
   console.log(message);
   console.log("To Whom with chat:", currentChat);
@@ -58,7 +58,7 @@ const Chat = ({ user }) => {
       {currentChat && (
         <div className='chat-window'>
           <h5>You are chatting with {currentChat}</h5>
-          <MessageList />
+          <MessageList messages={message} user={user} />
           <div className='message-field'>
             <input
               type='text'
@@ -67,7 +67,7 @@ const Chat = ({ user }) => {
               style={{ minWidth: "400px" }}
               onChange={(e) => setCurrentMessage(e.target.value)}
             />
-            <button className='btn-primary'>Send</button>
+            <button className='btn-prime'>Send</button>
           </div>
         </div>
       )}
