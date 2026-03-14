@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "./chat.css";
 import { MessageList } from "../MessageList";
-const socket = io("http://localhost:5001");
+import API from "../../api/axiosInstance";
+const socket = io("https://chat-flow-e7zr.onrender.com");
 
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
@@ -14,14 +14,10 @@ const Chat = ({ user }) => {
   const [message, setMessage] = useState([]);
   // USER INTERACTION MSG TYPES
   const [currentMessage, setCurrentMessage] = useState("");
-  console.log("Collection:", message);
-  console.log("To Whom with chat:", currentChat);
-  console.log("User TYPE>>", currentMessage);
-
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios.get("http://localhost:5001/users", {
+        const res = await API.get("/users", {
           params: { currentUser: user.username },
         });
         setUsers(res.data);
@@ -42,7 +38,7 @@ const Chat = ({ user }) => {
 
   const fetchMessages = async (receiver) => {
     try {
-      const { data } = await axios.get("http://localhost:5001/messages", {
+      const { data } = await API.get("/messages", {
         params: { sender: user.username, receiver },
       });
       setMessage(data);

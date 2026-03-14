@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import API from "../api/axiosInstance";
 const Register = ({ setUser }) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +12,7 @@ const Register = ({ setUser }) => {
       return;
     }
     try {
-      const { data } = await axios.post("http://localhost:5001/auth/register", {
+      const { data } = await API.post(`/auth/register`, {
         username,
         password,
       });
