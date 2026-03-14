@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import { io } from "socket.io-client";
 import "./chat.css";
 import { MessageList } from "../MessageList";
+const socket = io("http://localhost:5001");
+
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
   // WITH WHOM YOU"R CHATTING
@@ -12,7 +14,7 @@ const Chat = ({ user }) => {
   const [message, setMessage] = useState([]);
   // USER INTERACTION MSG TYPES
   const [currentMessage, setCurrentMessage] = useState("");
-  console.log(message);
+  console.log("Collection:", message);
   console.log("To Whom with chat:", currentChat);
   console.log("User TYPE>>", currentMessage);
 
@@ -27,7 +29,16 @@ const Chat = ({ user }) => {
         console.error("Error fetching users", error);
       }
     })();
-  }, []);
+    // Listen for incoming message
+    socket.on("receive_message", (data) => {
+      if (data.sender === currentChat || data.receiver === currentChat) {
+        setMessage((prev) => [...prev, data]);
+      }
+    });
+    return () => {
+      socket.off("receive_message");
+    };
+  }, [currentChat]);
 
   const fetchMessages = async (receiver) => {
     try {
@@ -40,6 +51,18 @@ const Chat = ({ user }) => {
       console.error("Error fetching message", error);
     }
   };
+
+  const sendMessage = () => {
+    const messageData = {
+      sender: user.username,
+      receiver: currentChat,
+      message: currentMessage,
+    };
+    socket.emit("send_message", messageData);
+    setMessage((prev) => [...prev, messageData]);
+    setCurrentMessage("");
+  };
+
   return (
     <div className='chat-container'>
       <h2>Welcome, {user?.username}</h2>
@@ -67,7 +90,9 @@ const Chat = ({ user }) => {
               style={{ minWidth: "400px" }}
               onChange={(e) => setCurrentMessage(e.target.value)}
             />
-            <button className='btn-prime'>Send</button>
+            <button className='btn-prime' onClick={sendMessage}>
+              Send
+            </button>
           </div>
         </div>
       )}
