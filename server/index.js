@@ -17,7 +17,7 @@ const server = http.createServer(app);
 // instantiated/established new server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["https://chat-flow-swart.vercel.app", "http://localhost:3000"],
   },
 });
 
