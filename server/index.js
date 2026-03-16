@@ -47,6 +47,23 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("receive_message", data);
   });
 
+  // TYPING INDICATOR
+  socket.on("typing", ({ sender, receiver }) => {
+    socket.broadcast.emit("user_typing", { sender, receiver });
+  });
+
+  socket.on("stop_typing", ({ sender, receiver }) => {
+    socket.broadcast.emit("user_stop_typing", { sender, receiver });
+  });
+
+  // READ RECEIPT
+  socket.on("mark_read", async ({ sender, receiver }) => {
+    await Messages.updateMany(
+      { sender, receiver, read: false },
+      { read: true },
+    );
+    socket.broadcast.emit("messages_read", { sender, receiver });
+  });
   // Once done everything we closed connection
   // It will trigger when client disconnect from server
   socket.on("disconnect", () => {
