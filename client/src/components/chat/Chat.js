@@ -4,8 +4,6 @@ import { io } from "socket.io-client";
 import "./chat.css";
 import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
-import EmojiPicker from "emoji-picker-react";
-
 const socket = io("https://chat-flow-e7zr.onrender.com");
 
 const Chat = ({ user }) => {
@@ -16,10 +14,6 @@ const Chat = ({ user }) => {
   const [message, setMessage] = useState([]);
   // USER INTERACTION MSG TYPES
   const [currentMessage, setCurrentMessage] = useState("");
-  // TYPING SUGGESTION
-  const [typingUser, setTypingUser] = useState(null);
-  const [showEmoji, setShowEmoji] = useState(false);
-
   useEffect(() => {
     (async () => {
       try {
@@ -31,34 +25,14 @@ const Chat = ({ user }) => {
         console.error("Error fetching users", error);
       }
     })();
-
     // Listen for incoming message
     socket.on("receive_message", (data) => {
       if (data.sender === currentChat || data.receiver === currentChat) {
         setMessage((prev) => [...prev, data]);
       }
     });
-
-    socket.on("user_typing", ({ sender }) => {
-      if (sender === currentChat) {
-        setTypingUser(sender);
-      }
-    });
-
-    socket.on("user_stop_typing", () => {
-      setTypingUser(null);
-    });
-    socket.on("messages_read", ({ sender }) => {
-      setMessage((prev) =>
-        prev.map((msg) =>
-          msg.sender === sender ? { ...msg, read: true } : msg,
-        ),
-      );
-    });
     return () => {
       socket.off("receive_message");
-      socket.off("user_typing");
-      socket.off("user_stop_typing");
     };
   }, [currentChat]);
 
@@ -69,11 +43,6 @@ const Chat = ({ user }) => {
       });
       setMessage(data);
       setCurrentChat(receiver);
-
-      socket.emit("mark_read", {
-        sender: receiver,
-        receiver: user.username,
-      });
     } catch (error) {
       console.error("Error fetching message", error);
     }
@@ -109,44 +78,13 @@ const Chat = ({ user }) => {
         <div className='chat-window'>
           <h5>You are chatting with {currentChat}</h5>
           <MessageList messages={message} user={user} />
-          {typingUser && <p className='typing'>{typingUser} is typing</p>}
           <div className='message-field'>
-            <div className='emoji-container'>
-              <button
-                className='emoji-btn'
-                onClick={() => setShowEmoji(!showEmoji)}>
-                😊
-              </button>
-
-              {showEmoji && (
-                <div className='emoji-picker'>
-                  <EmojiPicker
-                    onEmojiClick={(emoji) =>
-                      setCurrentMessage((prev) => prev + emoji.emoji)
-                    }
-                  />
-                </div>
-              )}
-            </div>
             <input
               type='text'
               value={currentMessage}
               placeholder='Type a message...'
-              onChange={(e) => {
-                setCurrentMessage(e.target.value);
-
-                socket.emit("typing", {
-                  sender: user.username,
-                  receiver: currentChat,
-                });
-
-                setTimeout(() => {
-                  socket.emit("stop_typing", {
-                    sender: user.username,
-                    receiver: currentChat,
-                  });
-                }, 1000);
-              }}
+              style={{ minWidth: "400px" }}
+              onChange={(e) => setCurrentMessage(e.target.value)}
             />
             <button className='btn-prime' onClick={sendMessage}>
               Send

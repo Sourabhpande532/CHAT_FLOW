@@ -42,28 +42,9 @@ io.on("connection", (socket) => {
     const { sender, receiver, message } = data;
     // Now,we have to create messages schema as well so we can put in proper formate & save to DB
     const newMessage = new Messages({ sender, receiver, message });
-    const savedMessage = await newMessage.save();
+    await newMessage.save();
     // How receiver will know send someone message it'll notify user message has come handle in frontend end.
-    // socket.broadcast.emit("receive_message", data);
-    io.emit("receive_message", savedMessage);
-  });
-
-  // TYPING INDICATOR
-  socket.on("typing", ({ sender, receiver }) => {
-    socket.broadcast.emit("user_typing", { sender, receiver });
-  });
-
-  socket.on("stop_typing", ({ sender, receiver }) => {
-    socket.broadcast.emit("user_stop_typing", { sender, receiver });
-  });
-
-  // READ RECEIPT
-  socket.on("mark_read", async ({ sender, receiver }) => {
-    await Messages.updateMany(
-      { sender, receiver, read: false },
-      { read: true },
-    );
-    socket.broadcast.emit("messages_read", { sender, receiver });
+    socket.broadcast.emit("receive_message", data);
   });
 
   // Once done everything we closed connection
