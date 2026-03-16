@@ -10,9 +10,22 @@ const MessageList = ({ messages, user }) => {
         >
           <strong>{msg.sender}: </strong>
           {msg.message}
+
+          <div className="meta">
+            <span>
+              {msg.createdAt
+                ? new Date(msg.createdAt).toLocaleTimeString()
+                : ""}
+            </span>
+
+            {msg.sender === user.username && (
+              <span>{msg.read ? "✔✔" : "✔"}</span>
+            )}
+          </div>
         </div>
       ))}
     </div>
   );
 };
+
 export { MessageList };

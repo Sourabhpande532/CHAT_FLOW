@@ -32,3 +32,29 @@
 .btn-primary {
   background-color: #daf8cb;
 }
+
+.message {
+  padding: 8px;
+  margin: 6px;
+  border-radius: 10px;
+}
+
+.sent {
+  background: #dcf8c6;
+  margin-left: auto;
+}
+
+.received {
+  background: #fff;
+}
+
+.meta {
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.typing {
+  font-style: italic;
+  color: gray;
+}
