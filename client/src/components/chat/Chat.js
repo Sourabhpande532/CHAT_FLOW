@@ -28,10 +28,7 @@ const Chat = ({ user }) => {
     fetchUsers();
 
     socket.on("receive_message", (data) => {
-      if (
-        data.sender === currentChat ||
-        data.receiver === currentChat
-      ) {
+      if (data.sender === currentChat || data.receiver === currentChat) {
         setMessage((prev) => [...prev, data]);
       }
     });
@@ -49,8 +46,8 @@ const Chat = ({ user }) => {
     socket.on("messages_read", ({ sender }) => {
       setMessage((prev) =>
         prev.map((msg) =>
-          msg.sender === sender ? { ...msg, read: true } : msg
-        )
+          msg.sender === sender ? { ...msg, read: true } : msg,
+        ),
       );
     });
 
@@ -94,66 +91,63 @@ const Chat = ({ user }) => {
   const avatarLetter = (name) => (name ? name.charAt(0).toUpperCase() : "?");
 
   return (
-    <div className="chat-container">
-
+    <div className='chat-container'>
       {/* ── Sidebar ── */}
-      <div className="chat-list">
-        <div className="chat-list-header">
-          <div className="app-title">
-            <span className="online-badge" />
+      <div className='chat-list'>
+        <div className='chat-list-header'>
+          <div className='app-title'>
+            <span className='online-badge' />
             💬 ChatFlow
           </div>
         </div>
 
         <h3>Contacts</h3>
 
-        <div className="chat-users-scroll">
+        <div className='chat-users-scroll'>
           {users.map((u) => (
             <div
               key={u._id}
               className={`chat-user ${currentChat === u.username ? "active" : ""}`}
-              onClick={() => fetchMessages(u.username)}
-            >
-              <div className="chat-user-avatar">{avatarLetter(u.username)}</div>
-              <span className="chat-user-name">{u.username}</span>
+              onClick={() => fetchMessages(u.username)}>
+              <div className='chat-user-avatar'>{avatarLetter(u.username)}</div>
+              <span className='chat-user-name'>{u.username}</span>
             </div>
           ))}
         </div>
 
-        <div className="chat-current-user">
-          <div className="you-avatar">{avatarLetter(user?.username)}</div>
+        <div className='chat-current-user'>
+          <div className='you-avatar'>{avatarLetter(user?.username)}</div>
           <span>{user?.username}</span>
         </div>
       </div>
 
       {/* ── Main area ── */}
       {currentChat ? (
-        <div className="chat-window">
-
+        <div className='chat-window'>
           {/* Header */}
-          <div className="chat-window-header">
-            <div className="peer-avatar">{avatarLetter(currentChat)}</div>
+          <div className='chat-window-header'>
+            <div className='peer-avatar'>{avatarLetter(currentChat)}</div>
             <div>
               <h5>{currentChat}</h5>
-              <p className="status-text">● Online</p>
+              <p className='status-text'>● Online</p>
             </div>
           </div>
 
           {/* Messages */}
           <MessageList messages={message} user={user} />
 
-          {typingUser && (
-            <p className="typing">{typingUser} is typing…</p>
-          )}
+          {typingUser && <p className='typing'>{typingUser} is typing…</p>}
 
           {/* Input */}
-          <div className="message-field">
-            <button className="btn-emoji" onClick={() => setShowEmoji(!showEmoji)}>
+          <div className='message-field'>
+            <button
+              className='btn-emoji'
+              onClick={() => setShowEmoji(!showEmoji)}>
               😊
             </button>
 
             {showEmoji && (
-              <div className="emoji-picker-wrapper">
+              <div className='emoji-picker-wrapper'>
                 <EmojiPicker
                   onEmojiClick={(emoji) =>
                     setCurrentMessage((prev) => prev + emoji.emoji)
@@ -163,9 +157,9 @@ const Chat = ({ user }) => {
             )}
 
             <input
-              type="text"
+              type='text'
               value={currentMessage}
-              placeholder="Type a message…"
+              placeholder='Type a message…'
               onChange={(e) => {
                 setCurrentMessage(e.target.value);
 
@@ -184,14 +178,14 @@ const Chat = ({ user }) => {
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
 
-            <button className="btn-send" onClick={sendMessage}>
+            <button className='btn-send' onClick={sendMessage}>
               ➤
             </button>
           </div>
         </div>
       ) : (
-        <div className="chat-empty-state">
-          <div className="empty-icon">💬</div>
+        <div className='chat-empty-state'>
+          <div className='empty-icon'>💬</div>
           <p>Select a contact to start chatting</p>
         </div>
       )}
