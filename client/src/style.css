@@ -1,65 +1,85 @@
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
+/* ===== App Shell ===== */
 .app {
-    text-align: center;
-    margin: 20px;
+  min-height: 100vh;
 }
 
+/* ===== Auth Page ===== */
+.auth-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-page-wrapper .container {
+  max-width: 900px;
+}
+
+.auth-page-wrapper .row {
+  gap: 1.5rem 0;
+}
+
+/* Auth card heading */
+.auth-page-wrapper .card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, #fff 30%, var(--color-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-page-wrapper .card p {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Status feedback */
+.auth-page-wrapper .card p:last-child {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-danger);
+  -webkit-text-fill-color: var(--color-danger);
+  background: none;
+}
+
+/* Full-width button */
+.auth-page-wrapper .btn-success {
+  width: 100%;
+  margin-top: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* ===== Auth Container (legacy fallback) ===== */
 .auth-container {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px auto;
+  display: flex;
+  justify-content: space-around;
+  margin: 20px auto;
 }
 
-.auth-form{
-    margin: 20px;
+.auth-form {
+  margin: 20px;
 }
 
-.chat-container {
-    max-width: 900px;
-    min-height: 60vh;
-    background: #fff;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* ===== App branding stripe ===== */
+.app-brand {
+  text-align: center;
+  padding: 1.5rem 0 0;
+  letter-spacing: 1px;
 }
-
-.message-list {
-    height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
+.app-brand span {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.message{
-    padding: 10px;
-    margin: 5px;
-    border-radius: 8px;
-}
-.message.sent{
-    background-color: #daf8cb;
-    text-align: right;
-}
-.message.received{
-    background-color: #f1f0f0;
-    text-align: left;
-}
-
-.message-input {
-    display: flex;
-    justify-content: space-between;
-}
-
-input, button {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
-}
-
-.btn-prime {
-    background-color: #daf8cb;
-    border-radius: 5px;
+.app-brand p {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }

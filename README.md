@@ -175,6 +175,7 @@ JWT_SECRET=your_secret_key
 CLIENT_URL=http://localhost:3000
 
 ```
+
 **Frontend**
 
 ```
