@@ -4,17 +4,18 @@ const MessageList = ({ messages, user }) => {
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={`message ${
-            msg.sender === user.username ? "sent" : "received"
-          }`}
+          className={`message ${msg.sender === user.username ? "sent" : "received"}`}
         >
-          <strong>{msg.sender}: </strong>
+          <strong>{msg.sender}</strong>
           {msg.message}
 
           <div className="meta">
             <span>
               {msg.createdAt
-                ? new Date(msg.createdAt).toLocaleTimeString()
+                ? new Date(msg.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
                 : ""}
             </span>
 
