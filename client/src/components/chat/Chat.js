@@ -5,6 +5,7 @@ import "./chat.css";
 import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
 import EmojiPicker from "emoji-picker-react";
+import Sidebar from "../Sidebar";
 
 const socket = io("https://chat-flow-e7zr.onrender.com");
 
@@ -93,34 +94,13 @@ const Chat = ({ user }) => {
   return (
     <div className='chat-container'>
       {/* ── Sidebar ── */}
-      <div className='chat-list'>
-        <div className='chat-list-header'>
-          <div className='app-title'>
-            <span className='online-badge' />
-            💬 ChatFlow
-          </div>
-        </div>
-
-        <h3>Contacts</h3>
-
-        <div className='chat-users-scroll'>
-          {users.map((u) => (
-            <div
-              key={u._id}
-              className={`chat-user ${currentChat === u.username ? "active" : ""}`}
-              onClick={() => fetchMessages(u.username)}>
-              <div className='chat-user-avatar'>{avatarLetter(u.username)}</div>
-              <span className='chat-user-name'>{u.username}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className='chat-current-user'>
-          <div className='you-avatar'>{avatarLetter(user?.username)}</div>
-          <span>{user?.username}</span>
-        </div>
-      </div>
-
+      <Sidebar
+        users={users}
+        currentChat={currentChat}
+        fetchMessages={fetchMessages}
+        avatarLetter={avatarLetter}
+        user={user}
+      />
       {/* ── Main area ── */}
       {currentChat ? (
         <div className='chat-window'>
