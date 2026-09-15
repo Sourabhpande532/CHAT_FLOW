@@ -5,47 +5,80 @@ import API from "../api/axiosInstance";
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState(null);
+  const [loading,  setLoading]  = useState(false);
+  const [errors,   setErrors]   = useState({});
+  const [apiMsg,   setApiMsg]   = useState(null);
+
+  /* ── validation ── */
+  const validate = () => {
+    const e = {};
+    if (!username.trim()) e.username = "Username is required";
+    if (!password)        e.password = "Password is required";
+    return e;
+  };
+
   const handleLogin = async () => {
+    const e = validate();
+    if (Object.keys(e).length) { setErrors(e); return; }
+    setErrors({});
+    setLoading(true);
     try {
-      const { data } = await API.post(`/auth/login`, {
-        username,
-        password,
-      });
+      const { data } = await API.post(`/auth/login`, { username, password });
       setUser(data);
-      toast.success("Login Successfully");
+      toast.success("Welcome back! 👋");
     } catch (error) {
-      console.error(error.response?.data?.message || "Error logging in");
-      setStatus(error.response?.data?.message || "Error logging in");
+      const msg = error.response?.data?.message || "Error logging in";
+      console.error(msg);
+      setApiMsg(msg);
     } finally {
-      setTimeout(() => setStatus(null), 3000);
+      setLoading(false);
+      setTimeout(() => setApiMsg(null), 3000);
     }
   };
+
   return (
-    <div className='card py-5 text-center'>
-      <div className='card-body px-5'>
-        <h2>Login</h2>
-        <p>Login with your credentials to continue</p>
-        <input
-          type='text'
-          value={username}
-          className='form-control form-control-lg mt-3'
-          placeholder='Enter username'
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type='text'
-          value={password}
-          className='form-control form-control-lg mt-3'
-          placeholder='Enter Password'
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className='btn btn-lg btn-success mt-3' onClick={handleLogin}>
-          Login
-        </button>
-        {status && <p>{status}</p>}
-      </div>
+    <div className='auth-card-login'>
+      <h2>Welcome Back</h2>
+      <div className='auth-divider' />
+      <p className='auth-subtitle'>Log in to continue your conversations</p>
+
+      {/* Username */}
+      <label className='auth-label' htmlFor='login-username'>Username</label>
+      <input
+        id='login-username'
+        type='text'
+        value={username}
+        className={`form-control${errors.username ? " is-invalid" : ""}`}
+        placeholder='Your username'
+        onChange={(e) => { setUsername(e.target.value); setErrors((p) => ({ ...p, username: "" })); }}
+        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+        disabled={loading}
+      />
+      {errors.username && <span className='auth-field-error'>{errors.username}</span>}
+
+      {/* Password */}
+      <label className='auth-label' htmlFor='login-password'>Password</label>
+      <input
+        id='login-password'
+        type='password'
+        value={password}
+        className={`form-control${errors.password ? " is-invalid" : ""}`}
+        placeholder='Your password'
+        onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
+        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+        disabled={loading}
+      />
+      {errors.password && <span className='auth-field-error'>{errors.password}</span>}
+
+      <div className='auth-spacer' />
+
+      <button className='auth-btn' onClick={handleLogin} disabled={loading}>
+        {loading ? "Signing in…" : "Sign In"}
+      </button>
+
+      {apiMsg && <p className='auth-status'>{apiMsg}</p>}
     </div>
   );
 };
+
 export { Login };

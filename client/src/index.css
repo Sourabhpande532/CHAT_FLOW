@@ -1,26 +1,60 @@
-/* ===== Google Font ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* =====================================================
+   ChatFlow — Design System
+   Palette: Warm Amber (#E07B39) + Teal (#3BBFA0)
+   Intent: editorial, warm, human — NOT generic purple
+   ===================================================== */
 
 /* ===== Design Tokens ===== */
 :root {
-  --color-bg:           #0d1117;
-  --color-surface:      rgba(255, 255, 255, 0.05);
-  --color-surface-hover:rgba(255, 255, 255, 0.09);
-  --color-border:       rgba(255, 255, 255, 0.10);
-  --color-primary:      #6c63ff;
-  --color-primary-dark: #574fd6;
-  --color-success:      #22c55e;
-  --color-danger:       #ef4444;
-  --color-text:         #e2e8f0;
-  --color-muted:        #94a3b8;
-  --color-sent-bg:      #6c63ff;
-  --color-recv-bg:      rgba(255, 255, 255, 0.08);
-  --radius-sm:          8px;
-  --radius-md:          12px;
-  --radius-lg:          20px;
-  --radius-xl:          28px;
-  --shadow-glass:       0 8px 32px rgba(0, 0, 0, 0.4);
-  --transition:         0.2s ease;
+  /* Backgrounds */
+  --color-bg:            #111009;   /* near-black, warm undertone */
+  --color-bg-elevated:   #1A1814;   /* slightly lighter surface */
+  --color-surface:       rgba(28, 25, 20, 0.85);
+  --color-surface-hover: rgba(40, 36, 30, 0.9);
+  --color-border:        rgba(200, 180, 150, 0.10);
+  --color-border-strong: rgba(200, 180, 150, 0.18);
+
+  /* Brand — Warm Amber */
+  --color-primary:       #E07B39;
+  --color-primary-dark:  #B85C1A;
+  --color-primary-glow:  rgba(224, 123, 57, 0.28);
+  --color-primary-muted: rgba(224, 123, 57, 0.12);
+
+  /* Accent — Teal-Mint */
+  --color-accent:        #3BBFA0;
+  --color-accent-dark:   #2A9980;
+  --color-accent-glow:   rgba(59, 191, 160, 0.22);
+
+  /* Text */
+  --color-text:          #F0EDE8;   /* warm off-white */
+  --color-text-secondary:#C8C0B5;
+  --color-muted:         #9A9189;
+  --color-placeholder:   #706860;
+
+  /* Semantic */
+  --color-danger:        #E05555;
+  --color-success:       #3BBFA0;   /* same as accent */
+
+  /* Chat bubbles */
+  --color-sent-bg:       #E07B39;
+  --color-recv-bg:       rgba(40, 36, 30, 0.9);
+
+  /* Radii — deliberate variety, not all the same */
+  --radius-xs:  4px;
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm:    0 2px 8px  rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 6px 24px rgba(0, 0, 0, 0.40);
+  --shadow-amber: 0 4px 18px var(--color-primary-glow);
+  --shadow-teal:  0 4px 18px var(--color-accent-glow);
+
+  /* Transitions */
+  --t-fast:   0.15s ease;
+  --t-normal: 0.22s ease;
 }
 
 /* ===== Base Reset ===== */
@@ -37,76 +71,88 @@ html {
 }
 
 body {
+  /* Inter loaded via <link> in index.html (non-render-blocking) */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(108, 99, 255, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 50%);
+    radial-gradient(ellipse 60% 50% at 15% 10%,  rgba(224, 123, 57, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 85%,  rgba(59, 191, 160, 0.06) 0%, transparent 60%);
   min-height: 100vh;
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
-/* ===== Scrollbar ===== */
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(108, 99, 255, 0.4);
-  border-radius: 99px;
+  background: rgba(224, 123, 57, 0.30);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(224, 123, 57, 0.55);
 }
 
-/* ===== Bootstrap Overrides ===== */
+/* ===== Bootstrap Component Overrides ===== */
+
+/* Card */
 .card {
   background: var(--color-surface) !important;
   border: 1px solid var(--color-border) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-glass) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
   color: var(--color-text) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
 }
 
+/* Form inputs */
 .form-control {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid var(--color-border) !important;
   color: var(--color-text) !important;
   border-radius: var(--radius-sm) !important;
-  transition: border-color var(--transition), box-shadow var(--transition) !important;
+  font-size: 0.9rem !important;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast) !important;
 }
 .form-control::placeholder {
-  color: var(--color-muted) !important;
+  color: var(--color-placeholder) !important;
 }
 .form-control:focus {
-  background: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
   border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25) !important;
+  box-shadow: 0 0 0 3px var(--color-primary-glow) !important;
   color: var(--color-text) !important;
   outline: none !important;
 }
 
+/* Primary action button */
 .btn-success {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)) !important;
+  background: var(--color-primary) !important;
   border: none !important;
-  border-radius: var(--radius-md) !important;
+  border-radius: var(--radius-sm) !important;
   font-weight: 600 !important;
-  letter-spacing: 0.3px;
-  transition: transform var(--transition), box-shadow var(--transition) !important;
-  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.35) !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.2px;
   color: #fff !important;
+  transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast) !important;
+  box-shadow: var(--shadow-amber) !important;
 }
 .btn-success:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 20px rgba(108, 99, 255, 0.5) !important;
+  background: var(--color-primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 22px var(--color-primary-glow) !important;
 }
 .btn-success:active {
   transform: translateY(0) !important;
+  box-shadow: none !important;
 }
 
+/* Code blocks (utility) */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: 'Cascadia Code', 'Fira Code', source-code-pro, Menlo, Monaco,
+    Consolas, 'Courier New', monospace;
 }
