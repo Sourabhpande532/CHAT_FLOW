@@ -86,10 +86,6 @@ npm run dev / npm start
 
 ---
 
-## Reference
-
-![](./assets/chat.png)
-
 ## API Reference
 
 ### POST /auth/register
