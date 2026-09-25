@@ -6,8 +6,9 @@ import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
 import EmojiPicker from "emoji-picker-react";
 
-const Chat = ({ user }) => {
+const Chat = ({ user, onLogout }) => {
   const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [currentChat, setCurrentChat] = useState(null);
   const [message, setMessage] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -24,16 +25,78 @@ const Chat = ({ user }) => {
   // B5 fix: hold the typing timeout in a ref so we can clear it
   const typingTimerRef = useRef(null);
 
+  const emojiPickerRef = useRef(null);
+  const emojiButtonRef = useRef(null);
+
   useEffect(() => {
+    if (!showEmoji) return;
+
+    const handleClickOutside = (e) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(e.target) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(e.target)
+      ) {
+        setShowEmoji(false);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setShowEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showEmoji]);
+
+  useEffect(() => {
+    let isMounted = true;
     const fetchUsers = async () => {
-      const res = await API.get("/users", {
-        params: { currentUser: user.username },
-      });
-      setUsers(res.data);
+      try {
+        setLoadingUsers(true);
+        const res = await API.get("/users", {
+          params: { currentUser: user.username },
+        });
+        if (isMounted) {
+          setUsers(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        if (isMounted) {
+          setLoadingUsers(false);
+        }
+      }
     };
 
     fetchUsers();
 
+    return () => {
+      isMounted = false;
+    };
+  }, [user.username]);
+
+  const handleLogout = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+    if (onLogout) {
+      onLogout();
+    }
+  }, [onLogout]);
+
+  useEffect(() => {
     // Register socket listeners
     socket.on("receive_message", (data) => {
       if (data.sender === currentChat || data.receiver === currentChat) {
@@ -125,26 +188,85 @@ const Chat = ({ user }) => {
             <span className="online-badge" />
             💬 ChatFlow
           </div>
+          {onLogout && (
+            <button
+              className="btn-logout btn-logout-mobile"
+              onClick={handleLogout}
+              title="Log out"
+              aria-label="Log out"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          )}
         </div>
 
         <h3>Contacts</h3>
 
         <div className="chat-users-scroll">
-          {users.map((u) => (
-            <div
-              key={u._id}
-              className={`chat-user ${currentChat === u.username ? "active" : ""}`}
-              onClick={() => fetchMessages(u.username)}
-            >
-              <div className="chat-user-avatar">{avatarLetter(u.username)}</div>
-              <span className="chat-user-name">{u.username}</span>
+          {loadingUsers ? (
+            <div className="contacts-loading">
+              <div className="contacts-spinner" />
+              <span>Loading contacts…</span>
             </div>
-          ))}
+          ) : users.length === 0 ? (
+            <div className="contacts-empty">No contacts available</div>
+          ) : (
+            users.map((u) => (
+              <div
+                key={u._id}
+                className={`chat-user ${currentChat === u.username ? "active" : ""}`}
+                onClick={() => fetchMessages(u.username)}
+              >
+                <div className="chat-user-avatar">{avatarLetter(u.username)}</div>
+                <span className="chat-user-name">{u.username}</span>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="chat-current-user">
-          <div className="you-avatar">{avatarLetter(user?.username)}</div>
-          <span>{user?.username}</span>
+          <div className="chat-current-user-info">
+            <div className="you-avatar">{avatarLetter(user?.username)}</div>
+            <span className="chat-current-user-name">{user?.username}</span>
+          </div>
+          {onLogout && (
+            <button
+              className="btn-logout"
+              onClick={handleLogout}
+              title="Log out"
+              aria-label="Log out"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -171,14 +293,15 @@ const Chat = ({ user }) => {
           {/* Input */}
           <div className="message-field">
             <button
+              ref={emojiButtonRef}
               className="btn-emoji"
-              onClick={() => setShowEmoji(!showEmoji)}
+              onClick={() => setShowEmoji((prev) => !prev)}
             >
               😊
             </button>
 
             {showEmoji && (
-              <div className="emoji-picker-wrapper">
+              <div ref={emojiPickerRef} className="emoji-picker-wrapper">
                 <EmojiPicker
                   onEmojiClick={(emoji) =>
                     setCurrentMessage((prev) => prev + emoji.emoji)

@@ -37,6 +37,10 @@ function App() {
     setUser(userData);
   };
 
+  const handleLogout = () => {
+    handleSetUser(null);
+  };
+
   return (
     <div className='app'>
       <Toaster position='top-center' reverseOrder={false} />
@@ -61,7 +65,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <Chat user={user} />
+        <Chat user={user} onLogout={handleLogout} />
       )}
     </div>
   );
