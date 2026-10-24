@@ -6,7 +6,7 @@ import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
 import EmojiPicker from "emoji-picker-react";
 
-const Chat = ({ user, setUser }) => {
+const Chat = ({ user, setUser, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [message, setMessage] = useState([]);
@@ -18,6 +18,7 @@ const Chat = ({ user, setUser }) => {
 
   const messagesEndRef = useRef(null);
   const emojiPickerRef = useRef(null);
+  const emojiButtonRef = useRef(null);
 
   // B3 fix: socket in a ref — created once, never re-created on re-render
   const socketRef = useRef(null);
@@ -29,24 +30,35 @@ const Chat = ({ user, setUser }) => {
   // B5 fix: hold the typing timeout in a ref so we can clear it
   const typingTimerRef = useRef(null);
 
-  // Close emoji picker when clicking anywhere outside
+  // Close emoji picker when clicking anywhere outside or pressing Escape
   useEffect(() => {
+    if (!showEmoji) return;
+
     const handleClickOutside = (e) => {
       if (
         emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(e.target)
+        !emojiPickerRef.current.contains(e.target) &&
+        emojiButtonRef.current &&
+        !emojiButtonRef.current.contains(e.target)
       ) {
         setShowEmoji(false);
       }
     };
 
-    if (showEmoji) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
-    }
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setShowEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [showEmoji]);
 
@@ -56,17 +68,22 @@ const Chat = ({ user, setUser }) => {
   }, [message]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchUsers = async () => {
-      setLoadingUsers(true);
       try {
+        setLoadingUsers(true);
         const res = await API.get("/users", {
           params: { currentUser: user.username },
         });
-        setUsers(res.data);
+        if (isMounted) {
+          setUsers(res.data);
+        }
       } catch (err) {
         console.error("Error fetching users:", err);
       } finally {
-        setLoadingUsers(false);
+        if (isMounted) {
+          setLoadingUsers(false);
+        }
       }
     };
 
@@ -106,6 +123,7 @@ const Chat = ({ user, setUser }) => {
 
     // B2 fix: clean up ALL listeners including messages_read
     return () => {
+      isMounted = false;
       socket.off("receive_message");
       socket.off("user_typing");
       socket.off("user_stop_typing");
@@ -185,7 +203,12 @@ const Chat = ({ user, setUser }) => {
       socketRef.current.disconnect();
       socketRef.current = null;
     }
-    setUser(null);
+    if (typeof onLogout === "function") {
+      onLogout();
+    }
+    if (typeof setUser === "function") {
+      setUser(null);
+    }
   };
 
   return (
@@ -301,6 +324,7 @@ const Chat = ({ user, setUser }) => {
           <div className='message-field'>
             <div className='emoji-picker-container' ref={emojiPickerRef}>
               <button
+                ref={emojiButtonRef}
                 type='button'
                 className='btn-emoji'
                 onClick={() => setShowEmoji((prev) => !prev)}
