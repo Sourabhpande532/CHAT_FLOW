@@ -6,6 +6,25 @@ import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
 import EmojiPicker from "emoji-picker-react";
 
+/* Universal Vector SVG Logout Icon — crisp on all devices, never renders as a cross/box */
+const LogoutIcon = () => (
+  <svg
+    width='16'
+    height='16'
+    viewBox='0 0 24 24'
+    fill='none'
+    stroke='currentColor'
+    strokeWidth='2.2'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    style={{ display: "block" }}
+    aria-hidden='true'
+  >
+    <path d='M18.36 6.64a9 9 0 1 1-12.73 0' />
+    <line x1='12' y1='2' x2='12' y2='12' />
+  </svg>
+);
+
 const Chat = ({ user, setUser, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
@@ -219,7 +238,7 @@ const Chat = ({ user, setUser, onLogout }) => {
     >
       {/* ── Sidebar ── */}
       <div className='chat-list'>
-        {/* Top Header with ChatFlow and mobile logout symbol beside it */}
+        {/* Top Header with ChatFlow and mobile logout SVG icon beside it */}
         <div className='chat-list-header'>
           <div
             className='app-title'
@@ -232,13 +251,14 @@ const Chat = ({ user, setUser, onLogout }) => {
             <span className='online-badge' />
             💬 ChatFlow
           </div>
-          {/* Mobile logout symbol (beside ChatFlow) */}
+          {/* Mobile logout icon (beside ChatFlow) */}
           <button
             className='btn-logout btn-logout-mobile'
             onClick={handleLogout}
             title='Logout'
+            aria-label='Logout'
           >
-            ⏻
+            <LogoutIcon />
           </button>
         </div>
 
@@ -270,7 +290,7 @@ const Chat = ({ user, setUser, onLogout }) => {
           )}
         </div>
 
-        {/* Desktop profile row at bottom of sidebar — logout symbol beside user name */}
+        {/* Desktop profile row at bottom of sidebar — logout icon beside user name */}
         <div className='chat-current-user'>
           <div className='you-avatar'>{avatarLetter(user?.username)}</div>
           <div className='you-details'>
@@ -281,8 +301,9 @@ const Chat = ({ user, setUser, onLogout }) => {
             className='btn-logout btn-logout-desktop'
             onClick={handleLogout}
             title='Logout'
+            aria-label='Logout'
           >
-            ⏻
+            <LogoutIcon />
           </button>
         </div>
       </div>
@@ -306,7 +327,7 @@ const Chat = ({ user, setUser, onLogout }) => {
             </div>
           </div>
 
-          {/* Messages Container — always flex: 1 so input strip is permanently anchored at bottom */}
+          {/* Messages Container — permanently anchored, never white */}
           <div className='chat-messages-container'>
             {loadingMessages ? (
               <div className='messages-loading'>
@@ -320,7 +341,7 @@ const Chat = ({ user, setUser, onLogout }) => {
 
           {typingUser && <p className='typing'>{typingUser} is typing…</p>}
 
-          {/* Input — permanently sticky at bottom, never jumps */}
+          {/* Input — permanently sticky at bottom */}
           <div className='message-field'>
             <div className='emoji-picker-container' ref={emojiPickerRef}>
               <button
