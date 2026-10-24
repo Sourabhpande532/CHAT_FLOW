@@ -7,53 +7,57 @@
 /* ===== Design Tokens ===== */
 :root {
   /* Backgrounds */
-  --color-bg:            #111009;   /* near-black, warm undertone */
-  --color-bg-elevated:   #1A1814;   /* slightly lighter surface */
-  --color-surface:       rgba(28, 25, 20, 0.85);
+  --color-bg: #111009;
+  /* near-black, warm undertone */
+  --color-bg-elevated: #1A1814;
+  /* slightly lighter surface */
+  --color-surface: rgba(28, 25, 20, 0.85);
   --color-surface-hover: rgba(40, 36, 30, 0.9);
-  --color-border:        rgba(200, 180, 150, 0.10);
+  --color-border: rgba(200, 180, 150, 0.10);
   --color-border-strong: rgba(200, 180, 150, 0.18);
 
   /* Brand — Warm Amber */
-  --color-primary:       #E07B39;
-  --color-primary-dark:  #B85C1A;
-  --color-primary-glow:  rgba(224, 123, 57, 0.28);
+  --color-primary: #E07B39;
+  --color-primary-dark: #B85C1A;
+  --color-primary-glow: rgba(224, 123, 57, 0.28);
   --color-primary-muted: rgba(224, 123, 57, 0.12);
 
   /* Accent — Teal-Mint */
-  --color-accent:        #3BBFA0;
-  --color-accent-dark:   #2A9980;
-  --color-accent-glow:   rgba(59, 191, 160, 0.22);
+  --color-accent: #3BBFA0;
+  --color-accent-dark: #2A9980;
+  --color-accent-glow: rgba(59, 191, 160, 0.22);
 
   /* Text */
-  --color-text:          #F0EDE8;   /* warm off-white */
-  --color-text-secondary:#C8C0B5;
-  --color-muted:         #9A9189;
-  --color-placeholder:   #706860;
+  --color-text: #F0EDE8;
+  /* warm off-white */
+  --color-text-secondary: #C8C0B5;
+  --color-muted: #9A9189;
+  --color-placeholder: #706860;
 
   /* Semantic */
-  --color-danger:        #E05555;
-  --color-success:       #3BBFA0;   /* same as accent */
+  --color-danger: #E05555;
+  --color-success: #3BBFA0;
+  /* same as accent */
 
   /* Chat bubbles */
-  --color-sent-bg:       #E07B39;
-  --color-recv-bg:       rgba(40, 36, 30, 0.9);
+  --color-sent-bg: #E07B39;
+  --color-recv-bg: rgba(40, 36, 30, 0.9);
 
   /* Radii — deliberate variety, not all the same */
-  --radius-xs:  4px;
-  --radius-sm:  8px;
-  --radius-md:  14px;
-  --radius-lg:  20px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius-pill: 999px;
 
   /* Shadows */
-  --shadow-sm:    0 2px 8px  rgba(0, 0, 0, 0.30);
-  --shadow-md:    0 6px 24px rgba(0, 0, 0, 0.40);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.40);
   --shadow-amber: 0 4px 18px var(--color-primary-glow);
-  --shadow-teal:  0 4px 18px var(--color-accent-glow);
+  --shadow-teal: 0 4px 18px var(--color-accent-glow);
 
   /* Transitions */
-  --t-fast:   0.15s ease;
+  --t-fast: 0.15s ease;
   --t-normal: 0.22s ease;
 }
 
@@ -75,8 +79,8 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(ellipse 60% 50% at 15% 10%,  rgba(224, 123, 57, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 85% 85%,  rgba(59, 191, 160, 0.06) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 50% at 15% 10%, rgba(224, 123, 57, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 85%, rgba(59, 191, 160, 0.06) 0%, transparent 60%);
   min-height: 100vh;
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
@@ -86,12 +90,19 @@ body {
 }
 
 /* ===== Custom Scrollbar ===== */
-::-webkit-scrollbar       { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(224, 123, 57, 0.30);
   border-radius: var(--radius-pill);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(224, 123, 57, 0.55);
 }
@@ -118,9 +129,11 @@ body {
   font-size: 0.9rem !important;
   transition: border-color var(--t-fast), box-shadow var(--t-fast) !important;
 }
+
 .form-control::placeholder {
   color: var(--color-placeholder) !important;
 }
+
 .form-control:focus {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: var(--color-primary) !important;
@@ -141,11 +154,13 @@ body {
   transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast) !important;
   box-shadow: var(--shadow-amber) !important;
 }
+
 .btn-success:hover {
   background: var(--color-primary-dark) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 6px 22px var(--color-primary-glow) !important;
 }
+
 .btn-success:active {
   transform: translateY(0) !important;
   box-shadow: none !important;

@@ -1,21 +1,21 @@
 /* =====================================================
    ChatFlow — Chat Layout
-   Uses tokens from index.css
+   Warm amber + teal palette (Human-crafted, not generic AI)
    ===================================================== */
 
 /* ─────────────── Layout Shell ─────────────── */
 .chat-container {
   display: flex;
   height: 100vh;
-  max-height: 100dvh;   /* dynamic viewport height for mobile */
+  max-height: 100dvh;
   overflow: hidden;
   background: var(--color-bg);
 }
 
 /* ─────────────── Sidebar ─────────────── */
 .chat-list {
-  width: 260px;
-  min-width: 260px;
+  width: 280px;
+  min-width: 280px;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-elevated);
@@ -23,19 +23,25 @@
   overflow: hidden;
 }
 
+/* Header bar containing ChatFlow */
 .chat-list-header {
-  padding: 1.1rem 1rem 0.9rem;
+  padding: 1rem 1rem 0.9rem;
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .app-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text);
   letter-spacing: 0.1px;
+  user-select: none;
 }
 
 /* Pulsing teal dot */
@@ -50,13 +56,75 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1;   transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.85); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+/* Logout Symbol Button — icon symbol only */
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(224, 85, 85, 0.35);
+  border-radius: var(--radius-xs);
+  color: #E05555;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-logout:hover {
+  background: rgba(224, 85, 85, 0.18);
+  border-color: #E05555;
+  color: #ff6b6b;
+}
+
+/* Desktop: show beside user name in bottom footer, hide in top header */
+@media (min-width: 769px) {
+  .btn-logout-mobile {
+    display: none !important;
+  }
+  .btn-logout-desktop {
+    display: inline-flex !important;
+    margin-left: auto;
+  }
+}
+
+/* Back button on mobile */
+.btn-back-contacts {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  border-radius: var(--radius-xs);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-back-contacts:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
 }
 
 /* Section label */
 .chat-list h3 {
-  font-size: 0.67rem;
+  font-size: 0.68rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.4px;
@@ -76,13 +144,13 @@
 .chat-user {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.65rem 0.6rem;
+  gap: 0.75rem;
+  padding: 0.7rem 0.65rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   color: var(--color-text-secondary);
   transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   border-left: 3px solid transparent;
 }
 
@@ -91,7 +159,7 @@
   color: var(--color-text);
 }
 
-/* Active: amber left-bar accent — not a full background flood */
+/* Active contact: amber left-bar accent */
 .chat-user.active {
   border-left-color: var(--color-primary);
   background: var(--color-primary-muted);
@@ -100,9 +168,9 @@
 
 /* Avatar */
 .chat-user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);   /* square-ish, not circle — deliberate */
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
   background: var(--color-primary-muted);
   border: 1px solid rgba(224, 123, 57, 0.25);
   color: var(--color-primary);
@@ -110,7 +178,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -121,41 +189,103 @@
   border-color: transparent;
 }
 
+.chat-user-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  text-align: left;
+}
+
 .chat-user-name {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Current user footer */
+.chat-user-sub {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  margin-top: 1px;
+}
+
+/* Contacts Status / Loader */
+.contacts-status {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.contacts-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-primary-muted);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Current user profile (sidebar bottom) */
 .chat-current-user {
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--color-muted);
+  gap: 0.7rem;
   background: var(--color-bg);
 }
 
 .you-avatar {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-xs);
   background: var(--color-accent-glow);
-  border: 1px solid rgba(59, 191, 160, 0.3);
+  border: 1px solid rgba(59, 191, 160, 0.35);
   color: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   flex-shrink: 0;
+}
+
+.you-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.you-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.you-status {
+  font-size: 0.68rem;
+  color: var(--color-accent);
 }
 
 /* ─────────────── Chat Window ─────────────── */
@@ -163,17 +293,19 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
   background: var(--color-bg);
+  position: relative;
 }
 
 /* Header bar */
 .chat-window-header {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-elevated);
   flex-shrink: 0;
 }
@@ -189,14 +321,18 @@
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 0.88rem;
   text-transform: uppercase;
   flex-shrink: 0;
 }
 
-.chat-window-header h5 {
+.peer-info {
+  flex: 1;
+}
+
+.peer-info h5 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;
@@ -216,40 +352,72 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   color: var(--color-muted);
   text-align: center;
   padding: 2rem;
+  background: var(--color-bg);
 }
 
 .empty-icon {
   font-size: 3.5rem;
-  opacity: 0.25;
+  opacity: 0.35;
   line-height: 1;
 }
 
-.chat-empty-state p {
-  font-size: 0.9rem;
-  color: var(--color-muted);
-  max-width: 220px;
-  line-height: 1.5;
+.chat-empty-state h4 {
+  color: var(--color-text);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0;
 }
 
-/* ─────────────── Message List ─────────────── */
+.chat-empty-state p {
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  margin: 0;
+  max-width: 320px;
+}
+
+/* ─────────────── Chat Messages Container ─────────────── */
+/* Always flex: 1 with min-height: 0 so the input bar below is ALWAYS locked to the bottom */
+.chat-messages-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Messages Loader — takes flex: 1 and centers inside the messages area */
+.messages-loading {
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  gap: 0.6rem;
+}
+
+/* ─────────────── Message List & Bubbles ─────────────── */
 .message-list {
   flex: 1;
   overflow-y: auto;
   padding: 1.25rem 1.25rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
   scroll-behavior: smooth;
 }
 
 /* Bubble */
 .message {
   max-width: 65%;
-  padding: 0.55rem 0.85rem 0.35rem;
+  padding: 0.6rem 0.9rem 0.4rem;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   line-height: 1.5;
@@ -259,8 +427,14 @@
 }
 
 @keyframes bubbleIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .message strong {
@@ -269,11 +443,11 @@
   font-weight: 600;
   margin-bottom: 2px;
   letter-spacing: 0.2px;
-  opacity: 0.65;
+  opacity: 0.7;
   text-transform: uppercase;
 }
 
-/* Sent — amber, right-aligned, squared bottom-right corner */
+/* Sent — warm amber, right-aligned */
 .message.sent {
   background: var(--color-primary);
   color: #fff;
@@ -283,10 +457,10 @@
 }
 
 .message.sent strong {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-/* Received — warm dark surface, squared bottom-left corner */
+/* Received — warm dark surface */
 .message.received {
   background: var(--color-recv-bg);
   border: 1px solid var(--color-border);
@@ -300,14 +474,14 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   font-size: 0.65rem;
   margin-top: 3px;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 .message.sent .meta {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ─────────────── Typing Indicator ─────────────── */
@@ -319,7 +493,7 @@
   flex-shrink: 0;
 }
 
-/* ─────────────── Message Input ─────────────── */
+/* ─────────────── Message Input (Permanently Sticky at Bottom) ─────────────── */
 .message-field {
   display: flex;
   align-items: center;
@@ -329,6 +503,7 @@
   background: var(--color-bg-elevated);
   position: relative;
   flex-shrink: 0;
+  margin-top: auto;
 }
 
 .message-field input[type="text"] {
@@ -337,8 +512,8 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
   color: var(--color-text);
-  padding: 0.55rem 1.1rem;
-  font-size: 0.875rem;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.88rem;
   font-family: inherit;
   outline: none;
   transition: border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
@@ -352,6 +527,13 @@
   border-color: var(--color-primary);
   background: rgba(224, 123, 57, 0.06);
   box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+/* ─────────────── Emoji Picker Enhancements ─────────────── */
+.emoji-picker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 /* Emoji button */
@@ -372,6 +554,37 @@
   background: var(--color-primary-muted);
   transform: scale(1.15);
   color: var(--color-primary);
+}
+
+/* Emoji picker popup wrapper */
+.emoji-picker-wrapper {
+  position: absolute;
+  bottom: 58px;
+  left: 0;
+  z-index: 250;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* Spacing between search icon and search text in EmojiPicker */
+.EmojiPickerReact .epr-search-container {
+  padding: 0 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.EmojiPickerReact .epr-search-container input.epr-search-input,
+.EmojiPickerReact .epr-search-container input[type="text"] {
+  padding-left: 44px !important;
+  font-size: 0.88rem !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.EmojiPickerReact .epr-search-container .epr-icn-search {
+  left: 20px !important;
+  width: 18px !important;
+  height: 18px !important;
 }
 
 /* Send button — round amber */
@@ -402,150 +615,133 @@
   box-shadow: none;
 }
 
-/* Emoji picker popup */
-.emoji-picker-wrapper {
-  position: absolute;
-  bottom: 64px;
-  left: 1rem;
-  z-index: 200;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
+/* ─────────────── Responsive ─────────────── */
+
+/* Tablet View (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .chat-list {
+    width: 250px;
+    min-width: 250px;
+  }
+  .message {
+    max-width: 75%;
+  }
 }
 
-/* ─────────────── Responsive ─────────────── */
+/* Mobile View (<= 768px) */
 @media (max-width: 768px) {
   .chat-container {
-    flex-direction: column;
-    /* Lock to full viewport height — input never scrolls off-screen */
     height: 100dvh;
-    height: 100vh; /* fallback for browsers without dvh */
+    height: 100vh;
     overflow: hidden;
+    position: relative;
+    flex-direction: row;
   }
 
-  .chat-list {
+  /* When no active chat: show full contacts list with ChatFlow + Logout symbol beside it */
+  .chat-container.no-active-chat .chat-list {
+    display: flex;
     width: 100%;
-    min-width: unset;
+    min-width: 100%;
+    height: 100%;
+    max-height: none;
     border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    max-height: 160px;
-    flex-shrink: 0;
-    overflow: hidden;
+  }
+
+  .chat-container.no-active-chat .chat-window,
+  .chat-container.no-active-chat .chat-empty-state {
+    display: none !important;
+  }
+
+  /* When active chat is selected: show full chat window */
+  .chat-container.has-active-chat .chat-list {
+    display: none !important;
+  }
+
+  .chat-container.has-active-chat .chat-window {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Back button visible on mobile */
+  .btn-back-contacts {
+    display: inline-flex;
+  }
+
+  /* Mobile logout symbol visible beside ChatFlow */
+  .btn-logout-mobile {
+    display: inline-flex !important;
+  }
+
+  .btn-logout-desktop {
+    display: none !important;
+  }
+
+  /* Hide bottom user profile on mobile to keep contact list spacious */
+  .chat-current-user {
+    display: none !important;
   }
 
   .chat-list-header {
-    padding: 0.65rem 0.85rem 0.5rem;
+    padding: 0.85rem 0.95rem;
   }
 
-  .chat-list h3 {
-    padding: 0.5rem 0.85rem 0.25rem;
-    font-size: 0.62rem;
-  }
-
-  .chat-users-scroll {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0.3rem 0.5rem 0.4rem;
-    gap: 0.3rem;
-    -webkit-overflow-scrolling: touch;
-    /* hide scrollbar but keep scrollability */
-    scrollbar-width: none;
-  }
-  .chat-users-scroll::-webkit-scrollbar { display: none; }
-
-  .chat-user {
-    flex-direction: column;
-    min-width: 62px;
-    max-width: 62px;
-    padding: 0.45rem 0.3rem;
-    text-align: center;
-    gap: 0.25rem;
-    border-left: none;
-    border-bottom: 2px solid transparent;
-    border-radius: var(--radius-sm);
-    transform: none !important;
-  }
-
-  .chat-user.active {
-    border-bottom-color: var(--color-primary);
-    border-left-color: transparent;
-  }
-
-  .chat-user-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 0.72rem;
-    margin: 0 auto;
-    border-radius: var(--radius-xs);
-  }
-
-  .chat-user-name {
-    font-size: 0.62rem;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 58px;
-  }
-
-  /* Chat window fills remaining height — critical for mobile */
-  .chat-window {
-    flex: 1;
-    min-height: 0;       /* allow flex child to shrink below content height */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .chat-current-user {
-    display: none;       /* hide footer on mobile — saves vertical space */
+  .btn-logout {
+    padding: 0.28rem 0.42rem;
+    font-size: 0.92rem;
   }
 
   .message {
-    max-width: 82%;
+    max-width: 86%;
+    font-size: 0.85rem;
   }
 
   .message-field {
-    padding: 0.55rem 0.65rem;
+    padding: 0.6rem 0.75rem;
   }
 
   .message-field input[type="text"] {
-    padding: 0.5rem 0.85rem;
-    font-size: 0.845rem;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.875rem;
   }
 
   .btn-send {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
 
-  /* Emoji picker doesn't overflow on mobile */
   .emoji-picker-wrapper {
     left: 0.5rem;
     right: 0.5rem;
-    bottom: 60px;
+    bottom: 64px;
   }
 }
 
 @media (max-width: 480px) {
   .chat-window-header {
-    padding: 0.6rem 0.85rem;
+    padding: 0.65rem 0.75rem;
+    gap: 0.5rem;
   }
 
-  .chat-window-header h5 {
-    font-size: 0.875rem;
+  .peer-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+  }
+
+  .peer-info h5 {
+    font-size: 0.88rem;
   }
 
   .message-list {
-    padding: 0.85rem 0.75rem;
+    padding: 0.75rem;
   }
 
   .message {
-    max-width: 88%;
-    font-size: 0.835rem;
-    padding: 0.5rem 0.75rem 0.3rem;
+    max-width: 90%;
   }
 
   .chat-empty-state .empty-icon {

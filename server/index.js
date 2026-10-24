@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// instantiated/established new server
+// Established new socket.io server
 const io = new Server(server, {
   cors: {
     origin: ["https://chat-flow-swart.vercel.app", "http://localhost:3000"],
@@ -34,20 +34,19 @@ app.get("/", (req, res) => {
   res.send("Welcome to express routing library");
 });
 
-// socket io logic
+// Socket.io logic
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
-  /* socket.io this listen send_message event from the client side this event is trigger when client send the message & data contains the info of sender receiver,message */
+  
+  // Listen for send_message event from client
   socket.on("send_message", async (data) => {
     const { sender, receiver, message } = data;
-    // Now,we have to create messages schema as well so we can put in proper formate & save to DB
     const newMessage = new Messages({ sender, receiver, message });
     await newMessage.save();
-    // How receiver will know send someone message it'll notify user message has come handle in frontend end.
     socket.broadcast.emit("receive_message", data);
   });
 
-  // TYPING INDICATOR
+  // Typing indicator
   socket.on("typing", ({ sender, receiver }) => {
     socket.broadcast.emit("user_typing", { sender, receiver });
   });
@@ -56,7 +55,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("user_stop_typing", { sender, receiver });
   });
 
-  // READ RECEIPT
+  // Read receipt
   socket.on("mark_read", async ({ sender, receiver }) => {
     await Messages.updateMany(
       { sender, receiver, read: false },
@@ -64,40 +63,37 @@ io.on("connection", (socket) => {
     );
     socket.broadcast.emit("messages_read", { sender, receiver });
   });
-  // Once done everything we closed connection
-  // It will trigger when client disconnect from server
+
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
   });
 });
 
-// TO RECEIVEED Messages list for the frontend need to write get request for messages & users so can see list on frontend
+// Fetch messages list between two users
 app.get("/messages", async (req, res) => {
   const { sender, receiver } = req.query;
   try {
     const messages = await Messages.find({
       $or: [
-        // 1st condition
         { sender, receiver },
-        // Or 2nd condition sender become receiver here & receiver become sender
         { sender: receiver, receiver: sender },
       ],
-    }).sort({ createdAt: 1 });
+    })
+      .sort({ createdAt: 1 })
+      .lean();
     res.json(messages);
   } catch (error) {
     res.status(500).json({ messages: "Error fetching messages." });
   }
 });
-/* Explained: see after .find() So there can be two condition here 
-first: sender sent a message to receiver
-2nd case: receiver sent message to sender to find it from db we used $or query find those cased in DB Additionaly you can sort latest one First */
 
-// Fetching all the register user
+// Fetching all registered users except current user
 app.get("/users", async (req, res) => {
   const { currentUser } = req.query;
   try {
-    // Here we want to find user accept currentUser supposed i logged in as sourabh i don't want my chat list separately don't want my details in this user i want all the other register user to list it
-    const users = await User.find({ username: { $ne: currentUser } });
+    const users = await User.find({ username: { $ne: currentUser } })
+      .select("username createdAt")
+      .lean();
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users" });
@@ -109,16 +105,3 @@ const PORT = process.env.PORT || 5001;
 server.listen(PORT, () =>
   console.log(`Server running on port at http://localhost:${PORT}`),
 );
-
-/* 
-STUDY:
-LET"S Implement the socket.io connection
-   First install: npm install socket.io
-   Then bring server of socket.io
-   Now befour form a Mongodb connection
-   Here basically we'r creating a server it should run our app by requiring http and inserting our app. once i.o ready then write implementation below  mongo
-
-   io.on("connection", (socket) => {
-   console.log("User connected", socket.id)});
-   This basically listen for a new client connection to the server. when server is connected each client has a unique ID that's why socket.id
- */

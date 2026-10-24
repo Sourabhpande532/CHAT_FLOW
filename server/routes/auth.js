@@ -16,7 +16,7 @@ router.post("/register", async (req, res) => {
         .status(400)
         .json({ message: "User already exists. Please Login" });
     }
-    // WITH OUR PASSWORD IT WILL ADD RANDOM DIGIT & THEN SAVED
+    // Salt and hash the password before saving
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const user = new User({ username: username, password: hashedPassword });
@@ -24,7 +24,7 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "6h" });
     res.status(201).json({
       success: true,
-      message: "Register successfully",
+      message: "Registered successfully",
       token,
       username,
     });
@@ -38,13 +38,13 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found." });
-    // COMPARE PASSWORD COMES FROM DB CHECK USER MODULE
+    // Compare provided password with hashed password stored in DB
     const isPasswordMatch = await user.comparePassword(password);
     if (!isPasswordMatch)
       return res.status(400).json({ message: "Invalid Credentials" });
     res.status(200).json({
       success: true,
-      message: "Login successfull",
+      message: "Login successful",
       username: user.username,
     });
   } catch (error) {

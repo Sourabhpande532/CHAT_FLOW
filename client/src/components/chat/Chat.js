@@ -6,13 +6,18 @@ import { MessageList } from "../MessageList";
 import API from "../../api/axiosInstance";
 import EmojiPicker from "emoji-picker-react";
 
-const Chat = ({ user }) => {
+const Chat = ({ user, setUser }) => {
   const [users, setUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [message, setMessage] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [typingUser, setTypingUser] = useState(null);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const messagesEndRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   // B3 fix: socket in a ref — created once, never re-created on re-render
   const socketRef = useRef(null);
@@ -24,12 +29,45 @@ const Chat = ({ user }) => {
   // B5 fix: hold the typing timeout in a ref so we can clear it
   const typingTimerRef = useRef(null);
 
+  // Close emoji picker when clicking anywhere outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(e.target)
+      ) {
+        setShowEmoji(false);
+      }
+    };
+
+    if (showEmoji) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [showEmoji]);
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [message]);
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await API.get("/users", {
-        params: { currentUser: user.username },
-      });
-      setUsers(res.data);
+      setLoadingUsers(true);
+      try {
+        const res = await API.get("/users", {
+          params: { currentUser: user.username },
+        });
+        setUsers(res.data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoadingUsers(false);
+      }
     };
 
     fetchUsers();
@@ -38,6 +76,13 @@ const Chat = ({ user }) => {
     socket.on("receive_message", (data) => {
       if (data.sender === currentChat || data.receiver === currentChat) {
         setMessage((prev) => [...prev, data]);
+        // If message is from current chat, mark as read
+        if (data.sender === currentChat) {
+          socket.emit("mark_read", {
+            sender: currentChat,
+            receiver: user.username,
+          });
+        }
       }
     });
 
@@ -54,8 +99,8 @@ const Chat = ({ user }) => {
     socket.on("messages_read", ({ sender }) => {
       setMessage((prev) =>
         prev.map((msg) =>
-          msg.sender === sender ? { ...msg, read: true } : msg
-        )
+          msg.sender === sender ? { ...msg, read: true } : msg,
+        ),
       );
     });
 
@@ -68,17 +113,27 @@ const Chat = ({ user }) => {
     };
   }, [currentChat]);
 
-  const fetchMessages = useCallback(async (receiver) => {
-    const { data } = await API.get("/messages", {
-      params: { sender: user.username, receiver },
-    });
-    setMessage(data);
-    setCurrentChat(receiver);
-    socket.emit("mark_read", {
-      sender: receiver,
-      receiver: user.username,
-    });
-  }, [user.username, socket]);
+  const fetchMessages = useCallback(
+    async (receiver) => {
+      setCurrentChat(receiver);
+      setLoadingMessages(true);
+      try {
+        const { data } = await API.get("/messages", {
+          params: { sender: user.username, receiver },
+        });
+        setMessage(data);
+        socket.emit("mark_read", {
+          sender: receiver,
+          receiver: user.username,
+        });
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      } finally {
+        setLoadingMessages(false);
+      }
+    },
+    [user.username, socket],
+  );
 
   const sendMessage = useCallback(() => {
     if (!currentMessage.trim()) return;
@@ -92,118 +147,201 @@ const Chat = ({ user }) => {
     socket.emit("send_message", messageData);
     setMessage((prev) => [...prev, messageData]);
     setCurrentMessage("");
+    setShowEmoji(false);
   }, [currentMessage, currentChat, user.username, socket]);
 
-  const handleTyping = useCallback((e) => {
-    setCurrentMessage(e.target.value);
+  const handleTyping = useCallback(
+    (e) => {
+      setCurrentMessage(e.target.value);
 
-    socket.emit("typing", {
-      sender: user.username,
-      receiver: currentChat,
-    });
-
-    // B5 fix: clear previous timer before setting a new one
-    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
-    typingTimerRef.current = setTimeout(() => {
-      socket.emit("stop_typing", {
+      socket.emit("typing", {
         sender: user.username,
         receiver: currentChat,
       });
-    }, 1000);
-  }, [currentChat, user.username, socket]);
+
+      // B5 fix: clear previous timer before setting a new one
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+      typingTimerRef.current = setTimeout(() => {
+        socket.emit("stop_typing", {
+          sender: user.username,
+          receiver: currentChat,
+        });
+      }, 1000);
+    },
+    [currentChat, user.username, socket],
+  );
 
   /* Helper: avatar initial */
   const avatarLetter = (name) => (name ? name.charAt(0).toUpperCase() : "?");
 
-  return (
-    <div className="chat-container">
+  /* Single Logout — clears session, disconnects socket, resets state */
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("chatflow_user");
+    } catch {
+      /* ignore storage errors */
+    }
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+    setUser(null);
+  };
 
+  return (
+    <div
+      className={`chat-container ${
+        currentChat ? "has-active-chat" : "no-active-chat"
+      }`}
+    >
       {/* ── Sidebar ── */}
-      <div className="chat-list">
-        <div className="chat-list-header">
-          <div className="app-title">
-            <span className="online-badge" />
+      <div className='chat-list'>
+        {/* Top Header with ChatFlow and mobile logout symbol beside it */}
+        <div className='chat-list-header'>
+          <div
+            className='app-title'
+            onClick={() => setCurrentChat(null)}
+            role='button'
+            tabIndex={0}
+            title='ChatFlow Home / Reset Chat'
+            style={{ cursor: "pointer" }}
+          >
+            <span className='online-badge' />
             💬 ChatFlow
           </div>
+          {/* Mobile logout symbol (beside ChatFlow) */}
+          <button
+            className='btn-logout btn-logout-mobile'
+            onClick={handleLogout}
+            title='Logout'
+          >
+            ⏻
+          </button>
         </div>
 
         <h3>Contacts</h3>
 
-        <div className="chat-users-scroll">
-          {users.map((u) => (
-            <div
-              key={u._id}
-              className={`chat-user ${currentChat === u.username ? "active" : ""}`}
-              onClick={() => fetchMessages(u.username)}
-            >
-              <div className="chat-user-avatar">{avatarLetter(u.username)}</div>
-              <span className="chat-user-name">{u.username}</span>
+        <div className='chat-users-scroll'>
+          {loadingUsers ? (
+            <div className='contacts-status'>
+              <span className='contacts-spinner' /> Loading contacts…
             </div>
-          ))}
+          ) : users.length === 0 ? (
+            <div className='contacts-status'>No other contacts available</div>
+          ) : (
+            users.map((u) => (
+              <div
+                key={u._id}
+                className={`chat-user ${
+                  currentChat === u.username ? "active" : ""
+                }`}
+                onClick={() => fetchMessages(u.username)}
+              >
+                <div className='chat-user-avatar'>{avatarLetter(u.username)}</div>
+                <div className='chat-user-details'>
+                  <span className='chat-user-name'>{u.username}</span>
+                  <span className='chat-user-sub'>Click to chat</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
-        <div className="chat-current-user">
-          <div className="you-avatar">{avatarLetter(user?.username)}</div>
-          <span>{user?.username}</span>
+        {/* Desktop profile row at bottom of sidebar — logout symbol beside user name */}
+        <div className='chat-current-user'>
+          <div className='you-avatar'>{avatarLetter(user?.username)}</div>
+          <div className='you-details'>
+            <span className='you-name'>{user?.username}</span>
+            <span className='you-status'>Active now</span>
+          </div>
+          <button
+            className='btn-logout btn-logout-desktop'
+            onClick={handleLogout}
+            title='Logout'
+          >
+            ⏻
+          </button>
         </div>
       </div>
 
-      {/* ── Main area ── */}
+      {/* ── Main chat area ── */}
       {currentChat ? (
-        <div className="chat-window">
-
+        <div className='chat-window'>
           {/* Header */}
-          <div className="chat-window-header">
-            <div className="peer-avatar">{avatarLetter(currentChat)}</div>
-            <div>
+          <div className='chat-window-header'>
+            <button
+              className='btn-back-contacts'
+              onClick={() => setCurrentChat(null)}
+              title='Back to Contacts'
+            >
+              ← Back
+            </button>
+            <div className='peer-avatar'>{avatarLetter(currentChat)}</div>
+            <div className='peer-info'>
               <h5>{currentChat}</h5>
-              <p className="status-text">● Online</p>
+              <p className='status-text'>● Online</p>
             </div>
           </div>
 
-          {/* Messages */}
-          <MessageList messages={message} user={user} />
-
-          {typingUser && (
-            <p className="typing">{typingUser} is typing…</p>
-          )}
-
-          {/* Input */}
-          <div className="message-field">
-            <button
-              className="btn-emoji"
-              onClick={() => setShowEmoji(!showEmoji)}
-            >
-              😊
-            </button>
-
-            {showEmoji && (
-              <div className="emoji-picker-wrapper">
-                <EmojiPicker
-                  onEmojiClick={(emoji) =>
-                    setCurrentMessage((prev) => prev + emoji.emoji)
-                  }
-                />
+          {/* Messages Container — always flex: 1 so input strip is permanently anchored at bottom */}
+          <div className='chat-messages-container'>
+            {loadingMessages ? (
+              <div className='messages-loading'>
+                <span className='contacts-spinner' /> Loading conversation…
               </div>
+            ) : (
+              <MessageList messages={message} user={user} />
             )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {typingUser && <p className='typing'>{typingUser} is typing…</p>}
+
+          {/* Input — permanently sticky at bottom, never jumps */}
+          <div className='message-field'>
+            <div className='emoji-picker-container' ref={emojiPickerRef}>
+              <button
+                type='button'
+                className='btn-emoji'
+                onClick={() => setShowEmoji((prev) => !prev)}
+                title='Insert Emoji'
+              >
+                😊
+              </button>
+
+              {showEmoji && (
+                <div className='emoji-picker-wrapper'>
+                  <EmojiPicker
+                    onEmojiClick={(emoji) => {
+                      setCurrentMessage((prev) => prev + emoji.emoji);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
 
             <input
-              type="text"
+              type='text'
               value={currentMessage}
-              placeholder="Type a message…"
+              placeholder='Type a message…'
               onChange={handleTyping}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
 
-            <button className="btn-send" onClick={sendMessage}>
+            <button
+              className='btn-send'
+              onClick={sendMessage}
+              title='Send message'
+            >
               ➤
             </button>
           </div>
         </div>
       ) : (
-        <div className="chat-empty-state">
-          <div className="empty-icon">💬</div>
-          <p>Select a contact to start chatting</p>
+        <div className='chat-empty-state'>
+          <div className='empty-icon'>💬</div>
+          <h4>Welcome to ChatFlow</h4>
+          <p>Select a contact from the list to start messaging</p>
         </div>
       )}
     </div>

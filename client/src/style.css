@@ -1,6 +1,6 @@
 /* =====================================================
    ChatFlow — Auth Page
-   Warm amber + teal palette (no AI blue/purple)
+   Warm amber + teal palette (Human-crafted, not generic AI)
    ===================================================== */
 
 .app {
@@ -14,29 +14,30 @@
   align-items: center;
   justify-content: center;
   padding: 2.5rem 1.25rem;
-  /* Subtle noise background — more human than a flat colour */
   background-image:
-    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(224, 123, 57, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 35% at 90% 85%, rgba(59, 191, 160, 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 55% 40% at 10% 15%, rgba(224, 123, 57, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 90% 85%, rgba(59, 191, 160, 0.06) 0%, transparent 60%);
 }
 
 .auth-page-wrapper .container {
-  max-width: 880px;
+  max-width: 860px;
   width: 100%;
 }
 
-/* ─────────────── Brand ─────────────── */
+/* ─────────────── Brand Header ─────────────── */
 .app-brand {
   text-align: center;
-  margin-bottom: 2.25rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  user-select: none;
 }
 
 .app-brand span {
   display: inline-block;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: var(--color-text);
-  letter-spacing: -0.5px;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: rgb(160, 158, 157);
+  letter-spacing: -0.3px;
 }
 
 .app-brand span em {
@@ -45,52 +46,53 @@
 }
 
 .app-brand p {
-  font-size: 0.85rem;
-  color: var(--color-muted);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: gray;
   margin-top: 0.35rem;
+  margin-bottom: 0;
+  letter-spacing: 0.1px;
 }
 
 /* ─────────────── Shared card base ─────────────── */
-/*
-   Both cards use display:flex + flex-direction:column
-   so they fill the Bootstrap row height equally (align-items-stretch)
-*/
 .auth-card-register,
 .auth-card-login {
   display: flex;
   flex-direction: column;
-  height: 100%;                       /* fill stretched row cell */
+  height: 100%;
   border-radius: var(--radius-md);
-  padding: 1.75rem 1.75rem 1.5rem;
+  padding: 1.85rem 1.75rem 1.6rem;
   color: var(--color-text);
   position: relative;
   overflow: hidden;
-  transition: box-shadow var(--t-normal);
+  transition: box-shadow var(--t-normal), transform var(--t-fast);
 }
 
 /* ─────────────── Register — primary / call-to-action ─────────────── */
 .auth-card-register {
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-strong);
-  box-shadow: var(--shadow-md), 0 0 0 1px rgba(224, 123, 57, 0.06);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(224, 123, 57, 0.08);
 }
 
 /* Amber→teal gradient rule at top */
 .auth-card-register::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
 }
 
 .auth-card-register:hover {
-  box-shadow: var(--shadow-md), 0 0 0 1px rgba(224, 123, 57, 0.18);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(224, 123, 57, 0.22);
 }
 
 /* ─────────────── Login — secondary / quieter ─────────────── */
 .auth-card-login {
-  background: rgba(22, 20, 16, 0.75);
+  background: rgba(22, 20, 16, 0.85);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
 }
@@ -105,7 +107,7 @@
 /* Heading */
 .auth-card-register h2,
 .auth-card-login h2 {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 0.2rem;
@@ -115,7 +117,7 @@
 /* Sub-heading */
 .auth-card-register .auth-subtitle,
 .auth-card-login .auth-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   color: var(--color-muted);
   margin: 0 0 1.25rem;
 }
@@ -127,13 +129,13 @@
   background: var(--color-primary);
   border-radius: var(--radius-pill);
   margin: 0.5rem 0 1rem;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Field label */
 .auth-label {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -146,15 +148,16 @@
 .auth-card-register .form-control,
 .auth-card-login .form-control {
   font-size: 0.875rem !important;
-  padding: 0.6rem 0.85rem !important;
+  padding: 0.65rem 0.85rem !important;
 }
 
 /* Validation error per field */
 .auth-field-error {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--color-danger);
   margin-top: 0.3rem;
-  min-height: 1em;
+  min-height: 1.1em;
+  font-weight: 500;
 }
 
 /* Push button + status to the bottom (flex spacer) */
@@ -167,14 +170,14 @@
   display: block;
   width: 100%;
   margin-top: 1.25rem;
-  padding: 0.7rem 1rem;
+  padding: 0.72rem 1rem;
   background: var(--color-primary);
   border: none;
   border-radius: var(--radius-sm);
   color: #fff;
   font-weight: 700;
-  font-size: 0.875rem;
-  letter-spacing: 0.1px;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
   cursor: pointer;
   transition: background var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   box-shadow: var(--shadow-amber);
@@ -200,10 +203,11 @@
 /* Status / API response message */
 .auth-status {
   margin-top: 0.75rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--color-danger);
   min-height: 1.1em;
   text-align: center;
+  font-weight: 500;
 }
 
 .auth-status.success {
@@ -215,14 +219,14 @@
 /* Tablet: keep side-by-side but with tighter spacing */
 @media (max-width: 900px) {
   .auth-page-wrapper .container {
-    max-width: 700px;
+    max-width: 720px;
   }
 }
 
 /* Mobile: stack vertically, cards full-width */
 @media (max-width: 767px) {
   .auth-page-wrapper {
-    padding: 1.75rem 1rem 2rem;
+    padding: 2rem 1rem;
     align-items: flex-start;
   }
 
@@ -231,16 +235,19 @@
   }
 
   .app-brand span {
-    font-size: 1.45rem;
+    font-size: 1.5rem;
+  }
+
+  .app-brand p {
+    font-size: 0.84rem;
   }
 
   .auth-card-register,
   .auth-card-login {
-    padding: 1.5rem 1.25rem 1.25rem;
-    height: auto;         /* on mobile natural height is fine — no stretch needed */
+    padding: 1.5rem 1.25rem 1.35rem;
+    height: auto;
   }
 
-  /* Don't add huge top margin on mobile between stacked cards */
   .auth-card-login {
     margin-top: 0;
   }
@@ -249,7 +256,7 @@
 @media (max-width: 400px) {
   .auth-card-register,
   .auth-card-login {
-    padding: 1.25rem 1rem 1rem;
+    padding: 1.25rem 1rem 1.1rem;
     border-radius: var(--radius-sm);
   }
 }
