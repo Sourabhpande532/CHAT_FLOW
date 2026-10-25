@@ -13,6 +13,10 @@ Built with a React frontend, Node.js/Express backend, MongoDB database, and Sock
 
 ---
 
+## Reference
+![](./assets/chat_ref.png)
+---
+
 ## ⚡ Quick Start
 
 ```bash
