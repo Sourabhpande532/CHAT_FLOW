@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.min.js";
 import "./App.css";
 import "./style.css";
 import { Toaster } from "react-hot-toast";
 import { Chat } from "./components/chat/Chat";
-import { Register } from "./components/Register";
-import { Login } from "./components/Login";
+import { LandingPage } from "./components/LandingPage";
 import API from "./api/axiosInstance";
 
-/* ── helpers ── */
 const STORAGE_KEY = "chatflow_user";
+export const CONTACTS_CACHE_KEY = "chatflow_contacts_cache";
 
 const loadUser = () => {
   try {
@@ -31,55 +29,66 @@ const saveUser = (userData) => {
 };
 
 function App() {
-  // Initialise from localStorage so refresh keeps the session alive
   const [user, setUser] = useState(loadUser);
+  const [showLanding, setShowLanding] = useState(false);
 
-  // Background wake-up ping to prevent Render free tier cold-start delay
+  // Warm up server + MongoDB connection pool and pre-cache contacts for instant load after login
   useEffect(() => {
     API.get("/").catch(() => {});
+    API.get("/users")
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          try {
+            localStorage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(res.data));
+          } catch {
+            /* ignore storage errors */
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // Wrap setter so every login/register also persists to localStorage
   const handleSetUser = (userData) => {
     saveUser(userData);
     setUser(userData);
+    if (userData) {
+      setShowLanding(false);
+    }
   };
 
   const handleLogout = () => {
+    setShowLanding(false);
     handleSetUser(null);
   };
 
   return (
     <div className='app'>
-      <Toaster position='top-center' reverseOrder={false} />
+      <Toaster
+        position='top-center'
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            background: "#1A1814",
+            color: "#F5F2ED",
+            border: "1px solid rgba(200, 180, 150, 0.22)",
+            fontSize: "0.875rem",
+          },
+        }}
+      />
 
-      {!user ? (
-        <div className='auth-page-wrapper'>
-          <div className='container'>
-            {/* Brand */}
-            <div
-              className='app-brand'
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              title='ChatFlow'
-            >
-              <span>
-                💬 Chat<em>Flow</em>
-              </span>
-              <p>Real-time messaging, built simple.</p>
-            </div>
-
-            <div className='row justify-content-center g-3 align-items-stretch'>
-              <div className='col-sm-10 col-md-5'>
-                <Register setUser={handleSetUser} />
-              </div>
-              <div className='col-sm-10 col-md-5'>
-                <Login setUser={handleSetUser} />
-              </div>
-            </div>
-          </div>
-        </div>
+      {!user || showLanding ? (
+        <LandingPage
+          setUser={handleSetUser}
+          currentUser={user}
+          onContinueToChat={() => setShowLanding(false)}
+        />
       ) : (
-        <Chat user={user} setUser={handleSetUser} onLogout={handleLogout} />
+        <Chat
+          user={user}
+          setUser={handleSetUser}
+          onLogout={handleLogout}
+          onNavigateHome={() => setShowLanding(true)}
+        />
       )}
     </div>
   );
