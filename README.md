@@ -6,13 +6,13 @@ A full-stack MERN real-time messaging application that enables users to register
 
 ## Live Demo
 
-[ChatFlow Live Demo](https://chat-flow-swart.vercel.app/)
+[ChatFlow Live](https://chat-flow-swart.vercel.app/)
 
 ---
 
 ## Reference Preview
 
-![ChatFlow Preview](./assets/chat_ref.png)
+![ChatFlow Preview](./assets/landing.png)
 
 ---
 
