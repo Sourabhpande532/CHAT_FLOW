@@ -55,18 +55,18 @@ const Register = ({ setUser }) => {
     };
   }, []);
 
+  /* ── validation ── */
   const validate = () => {
     const e = {};
     const clean = username.trim();
     if (!clean) e.username = "Username is required";
-    else if (clean.length < 3) e.username = "At least 3 characters required";
+    else if (clean.length < 3) e.username = "At least 3 characters";
     if (!password) e.password = "Password is required";
-    else if (password.length < 6) e.password = "At least 6 characters required";
+    else if (password.length < 6) e.password = "At least 6 characters";
     return e;
   };
 
-  const handleRegister = async (evt) => {
-    if (evt && evt.preventDefault) evt.preventDefault();
+  const handleRegister = async () => {
     if (loading) return;
 
     const e = validate();
@@ -94,14 +94,14 @@ const Register = ({ setUser }) => {
     } catch (error) {
       const msg =
         error.response?.data?.message ||
-        "Unable to register user. Please try again.";
+        "Error registering user. Please try again.";
       if (isMountedRef.current) {
         setApiOk(false);
         setApiMsg(msg);
         if (timerRef.current) clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
           if (isMountedRef.current) setApiMsg(null);
-        }, 4000);
+        }, 3500);
       }
     } finally {
       if (isMountedRef.current) {
@@ -111,7 +111,7 @@ const Register = ({ setUser }) => {
   };
 
   return (
-    <form className='auth-card-register' onSubmit={handleRegister} noValidate>
+    <div className='auth-card-register'>
       <div className='auth-card-badge primary'>Get Started</div>
       <h2>Create Account</h2>
       <div className='auth-divider' />
@@ -119,6 +119,7 @@ const Register = ({ setUser }) => {
         New here? Join the conversation in seconds
       </p>
 
+      {/* Username */}
       <label className='auth-label' htmlFor='reg-username'>
         Username
       </label>
@@ -127,13 +128,16 @@ const Register = ({ setUser }) => {
         type='text'
         placeholder='e.g. sourabh_123'
         value={username}
-        autoComplete='username'
+        autoComplete='off'
+        data-lpignore='true'
+        data-form-type='other'
         className={`form-control${errors.username ? " is-invalid" : ""}`}
         onChange={(e) => {
           setUserName(e.target.value);
           if (errors.username) setErrors((p) => ({ ...p, username: "" }));
           if (apiMsg) setApiMsg(null);
         }}
+        onKeyDown={(e) => e.key === "Enter" && handleRegister()}
         disabled={loading}
       />
       {errors.username && (
@@ -142,22 +146,29 @@ const Register = ({ setUser }) => {
         </span>
       )}
 
+      {/* Password */}
       <label className='auth-label' htmlFor='reg-password'>
         Password
       </label>
       <div className='password-input-wrapper'>
         <input
           id='reg-password'
-          type={showPassword ? "text" : "password"}
+          type='text'
           placeholder='At least 6 characters'
           value={password}
-          autoComplete='new-password'
-          className={`form-control${errors.password ? " is-invalid" : ""}`}
+          autoComplete='off'
+          data-lpignore='true'
+          data-1p-ignore='true'
+          data-form-type='other'
+          className={`form-control password-masked-input${
+            !showPassword ? " is-masked" : ""
+          }${errors.password ? " is-invalid" : ""}`}
           onChange={(e) => {
             setPassword(e.target.value);
             if (errors.password) setErrors((p) => ({ ...p, password: "" }));
             if (apiMsg) setApiMsg(null);
           }}
+          onKeyDown={(e) => e.key === "Enter" && handleRegister()}
           disabled={loading}
         />
         <button
@@ -166,7 +177,6 @@ const Register = ({ setUser }) => {
           onClick={() => setShowPassword((prev) => !prev)}
           aria-label={showPassword ? "Hide password" : "Show password"}
           title={showPassword ? "Hide password" : "Show password"}
-          tabIndex={-1}
         >
           <EyeIcon visible={showPassword} />
         </button>
@@ -179,19 +189,21 @@ const Register = ({ setUser }) => {
 
       <div className='auth-spacer' />
 
-      <button type='submit' className='auth-btn' disabled={loading}>
+      <button
+        type='button'
+        onClick={handleRegister}
+        className='auth-btn'
+        disabled={loading}
+      >
         {loading ? "Creating…" : "Create Account"}
       </button>
 
       {apiMsg && (
-        <p
-          className={`auth-status${apiOk ? " success" : ""}`}
-          role='alert'
-        >
+        <p className={`auth-status${apiOk ? " success" : ""}`} role='alert'>
           {apiMsg}
         </p>
       )}
-    </form>
+    </div>
   );
 };
 

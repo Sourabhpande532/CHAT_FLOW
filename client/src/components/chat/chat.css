@@ -1038,11 +1038,47 @@
 /* Tablet View (769px to 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .chat-list {
-    width: 260px;
-    min-width: 260px;
+    width: 245px;
+    min-width: 245px;
+  }
+  .chat-list-header {
+    padding: 0.85rem 0.9rem;
+  }
+  .chat-brand-title {
+    font-size: 1rem;
+  }
+  .chat-item {
+    padding: 0.65rem 0.75rem;
+    gap: 0.65rem;
+  }
+  .chat-item-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.82rem;
+  }
+  .chat-item-name {
+    font-size: 0.85rem;
+  }
+  .chat-window-header {
+    padding: 0.75rem 1.1rem;
+  }
+  .peer-info h5 {
+    font-size: 0.94rem;
+  }
+  .message-list {
+    padding: 1rem 1.15rem;
   }
   .message {
     max-width: 75%;
+    font-size: 0.86rem;
+    padding: 0.55rem 0.85rem;
+  }
+  .message-field {
+    padding: 0.75rem 1.1rem;
+  }
+  .btn-logout {
+    padding: 0.34rem 0.55rem;
+    font-size: 0.72rem;
   }
 }
 
@@ -1088,67 +1124,145 @@
   /* Back button visible on mobile */
   .btn-back-contacts {
     display: inline-flex;
+    padding: 0.34rem 0.6rem;
+    font-size: 0.76rem;
   }
 
-  /* Mobile logout buttons visible on both contacts header and chat header */
+  /* Show single mobile logout button in header; hide bottom duplicate */
   .btn-logout-mobile,
   .btn-logout-chat-mobile {
     display: inline-flex !important;
+    padding: 0.34rem 0.6rem;
+    font-size: 0.74rem;
   }
 
-  /* Keep bottom user profile visible on mobile contacts list too */
+  .btn-logout-desktop {
+    display: none !important;
+  }
+
+  /* Keep bottom user profile bar visible on mobile contacts list without duplicate logout button */
   .chat-current-user {
     display: flex !important;
-    padding: 0.7rem 0.9rem;
+    padding: 0.65rem 0.85rem;
   }
 
   .chat-list-header {
-    padding: 0.8rem 0.9rem;
+    padding: 0.75rem 0.85rem;
   }
 
-  .message {
-    max-width: 85%;
+  .chat-brand-title {
+    font-size: 1rem;
+  }
+
+  .chat-search-wrapper {
+    padding: 0.55rem 0.85rem;
+  }
+
+  .chat-search-input {
+    padding: 0.48rem 0.75rem 0.48rem 2rem;
+    font-size: 0.82rem;
+  }
+
+  .chat-item {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .chat-item-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 0.84rem;
+  }
+
+  .chat-item-name {
     font-size: 0.86rem;
   }
 
-  .message-field {
-    padding: 0.6rem 0.7rem;
-    gap: 0.45rem;
-  }
-
-  .message-field input[type="text"] {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.88rem;
-  }
-}
-
-/* Small Mobile (<= 480px, including 375px, 360px, 320px) */
-@media (max-width: 480px) {
   .chat-window-header {
-    padding: 0.65rem 0.7rem;
-    gap: 0.45rem;
+    padding: 0.68rem 0.85rem;
+    gap: 0.5rem;
   }
 
   .peer-avatar {
-    width: 34px;
-    height: 34px;
-    font-size: 0.8rem;
+    width: 36px;
+    height: 36px;
+    font-size: 0.82rem;
   }
 
   .peer-info h5 {
     font-size: 0.9rem;
   }
 
+  .peer-status {
+    font-size: 0.72rem;
+  }
+
   .message-list {
-    padding: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .message {
+    max-width: 85%;
+    font-size: 0.84rem;
+    padding: 0.52rem 0.8rem;
+  }
+
+  .message-field {
+    padding: 0.55rem 0.7rem;
+    gap: 0.4rem;
+  }
+
+  .message-field input[type="text"] {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-send {
+    width: 36px;
+    height: 36px;
+    font-size: 0.82rem;
+  }
+}
+
+/* Small Mobile (<= 480px, including 375px, 360px, 320px) */
+@media (max-width: 480px) {
+  .chat-window-header {
+    padding: 0.58rem 0.65rem;
+    gap: 0.4rem;
+  }
+
+  .peer-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.76rem;
+  }
+
+  .peer-info h5 {
+    font-size: 0.84rem;
+  }
+
+  .peer-status {
+    font-size: 0.68rem;
+  }
+
+  .message-list {
+    padding: 0.65rem;
   }
 
   .message {
     max-width: 90%;
+    font-size: 0.81rem;
+    padding: 0.48rem 0.72rem;
   }
 
-  .btn-logout {
-    padding: 0.34rem 0.5rem;
+  .btn-logout,
+  .btn-logout-mobile,
+  .btn-logout-chat-mobile {
+    padding: 0.3rem 0.48rem;
+    font-size: 0.7rem;
+  }
+
+  .btn-back-contacts {
+    padding: 0.3rem 0.5rem;
     font-size: 0.72rem;
   }
 }
@@ -1159,7 +1273,7 @@
   }
 
   .btn-back-contacts {
-    padding: 0.34rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.28rem 0.44rem;
+    font-size: 0.7rem;
   }
 }

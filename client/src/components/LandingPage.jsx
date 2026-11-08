@@ -138,8 +138,10 @@ const FEATURES = [
 
 const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
   const [previewMode, setPreviewMode] = useState("all");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const focusAuthInput = (inputId) => {
+    setMobileMenuOpen(false);
     const authSection = document.getElementById("auth-section");
     if (authSection) {
       authSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -151,6 +153,7 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
   };
 
   const scrollToSection = (sectionId) => {
+    setMobileMenuOpen(false);
     const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -158,12 +161,13 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
   };
 
   const handleBrandClick = () => {
+    setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className='landing-shell'>
-      {/* ── Sticky Top Navigation ── */}
+      {/* ── Sticky Top Navigation (Beeper / Hugging Face style) ── */}
       <nav className='landing-navbar' aria-label='Main navigation'>
         <div className='landing-nav-inner'>
           <div
@@ -234,12 +238,92 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
                   className='nav-btn-primary'
                   onClick={() => focusAuthInput("reg-username")}
                 >
-                  Get Started
+                  Create Account
                 </button>
               </>
             )}
           </div>
+
+          <button
+            type='button'
+            className='landing-hamburger-btn'
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+                <line x1='18' y1='6' x2='6' y2='18' />
+                <line x1='6' y1='6' x2='18' y2='18' />
+              </svg>
+            ) : (
+              <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
+                <line x1='3' y1='6' x2='21' y2='6' />
+                <line x1='3' y1='12' x2='21' y2='12' />
+                <line x1='3' y1='18' x2='21' y2='18' />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {mobileMenuOpen && (
+          <div className='landing-mobile-menu'>
+            <div className='mobile-menu-links'>
+              <button
+                type='button'
+                className='mobile-nav-link'
+                onClick={() => scrollToSection("auth-section")}
+              >
+                Account
+              </button>
+              <button
+                type='button'
+                className='mobile-nav-link'
+                onClick={() => scrollToSection("features-section")}
+              >
+                Features
+              </button>
+              <button
+                type='button'
+                className='mobile-nav-link'
+                onClick={() => scrollToSection("workflow-section")}
+              >
+                How It Works
+              </button>
+            </div>
+            <div className='mobile-menu-actions'>
+              {currentUser && onContinueToChat ? (
+                <button
+                  type='button'
+                  className='nav-btn-primary w-100'
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onContinueToChat();
+                  }}
+                >
+                  Back to Chat ({currentUser.username}) →
+                </button>
+              ) : (
+                <>
+                  <button
+                    type='button'
+                    className='nav-btn-secondary'
+                    onClick={() => focusAuthInput("login-username")}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    type='button'
+                    className='nav-btn-primary'
+                    onClick={() => focusAuthInput("reg-username")}
+                  >
+                    Create Account
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className='auth-page-wrapper'>
@@ -249,7 +333,7 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
             <div className='landing-hero-copy'>
               <div className='brand-pill'>
                 <span className='brand-pill-dot' />
-                <span>Real-Time WebSocket Messaging • MERN</span>
+                <span>Real-Time WebSocket Messaging • MERN Stack</span>
               </div>
 
               <div
@@ -319,7 +403,7 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
               </div>
             </div>
 
-            {/* ── Interactive Live Interface Mockup ── */}
+            {/* ── Interactive Live Interface Mockup (Beeper / WeChat inspired) ── */}
             <div
               className='landing-preview-card'
               aria-label='ChatFlow interface preview'
@@ -331,7 +415,7 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
                   <span className='dot-teal' />
                 </div>
                 <span className='preview-window-title'>
-                  ChatFlow — Live Preview
+                  ChatFlow — Live Conversation Preview
                 </span>
                 <span className='preview-live-pill'>● Connected</span>
               </div>
@@ -379,7 +463,7 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
                   <div className='preview-avatar'>A</div>
                   <div className='preview-contact-meta'>
                     <strong>alex_dev</strong>
-                    <span>● Online • Instant WebSocket</span>
+                    <span>● Online • Instant WebSocket channel</span>
                   </div>
                   <span className='preview-date-tag'>Today</span>
                 </div>
@@ -454,17 +538,17 @@ const LandingPage = ({ setUser, currentUser, onContinueToChat }) => {
               </p>
             </div>
 
-            <div className='auth-cards-grid'>
-              <div className='auth-card-col'>
+            <div className='row justify-content-center g-4 align-items-stretch'>
+              <div className='col-12 col-sm-11 col-md-6 col-lg-5'>
                 <Register setUser={setUser} />
               </div>
-              <div className='auth-card-col'>
+              <div className='col-12 col-sm-11 col-md-6 col-lg-5'>
                 <Login setUser={setUser} />
               </div>
             </div>
           </section>
 
-          {/* ── Feature Bento Grid ── */}
+          {/* ── Feature Bento Grid (WeChat & Hugging Face inspired) ── */}
           <section id='features-section' className='landing-features-section'>
             <div className='section-header-block'>
               <span className='section-eyebrow'>Built for Real-Time Clarity</span>

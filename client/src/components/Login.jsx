@@ -54,6 +54,7 @@ const Login = ({ setUser }) => {
     };
   }, []);
 
+  /* ── validation ── */
   const validate = () => {
     const e = {};
     if (!username.trim()) e.username = "Username is required";
@@ -61,8 +62,7 @@ const Login = ({ setUser }) => {
     return e;
   };
 
-  const handleLogin = async (evt) => {
-    if (evt && evt.preventDefault) evt.preventDefault();
+  const handleLogin = async () => {
     if (loading) return;
 
     const e = validate();
@@ -86,13 +86,13 @@ const Login = ({ setUser }) => {
     } catch (error) {
       const msg =
         error.response?.data?.message ||
-        "Unable to sign in. Please check your connection and try again.";
+        "Error logging in. Please try again.";
       if (isMountedRef.current) {
         setApiMsg(msg);
         if (timerRef.current) clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
           if (isMountedRef.current) setApiMsg(null);
-        }, 4000);
+        }, 3500);
       }
     } finally {
       if (isMountedRef.current) {
@@ -102,12 +102,13 @@ const Login = ({ setUser }) => {
   };
 
   return (
-    <form className='auth-card-login' onSubmit={handleLogin} noValidate>
+    <div className='auth-card-login'>
       <div className='auth-card-badge'>Existing Member</div>
       <h2>Welcome Back</h2>
       <div className='auth-divider' />
-      <p className='auth-subtitle'>Sign in to continue your conversations</p>
+      <p className='auth-subtitle'>Log in to continue your conversations</p>
 
+      {/* Username */}
       <label className='auth-label' htmlFor='login-username'>
         Username
       </label>
@@ -115,14 +116,17 @@ const Login = ({ setUser }) => {
         id='login-username'
         type='text'
         value={username}
-        autoComplete='username'
+        autoComplete='off'
+        data-lpignore='true'
+        data-form-type='other'
         className={`form-control${errors.username ? " is-invalid" : ""}`}
-        placeholder='Enter your username'
+        placeholder='Your username'
         onChange={(e) => {
           setUsername(e.target.value);
           if (errors.username) setErrors((p) => ({ ...p, username: "" }));
           if (apiMsg) setApiMsg(null);
         }}
+        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
         disabled={loading}
       />
       {errors.username && (
@@ -131,22 +135,29 @@ const Login = ({ setUser }) => {
         </span>
       )}
 
+      {/* Password */}
       <label className='auth-label' htmlFor='login-password'>
         Password
       </label>
       <div className='password-input-wrapper'>
         <input
           id='login-password'
-          type={showPassword ? "text" : "password"}
+          type='text'
           value={password}
-          autoComplete='current-password'
-          className={`form-control${errors.password ? " is-invalid" : ""}`}
-          placeholder='Enter your password'
+          autoComplete='off'
+          data-lpignore='true'
+          data-1p-ignore='true'
+          data-form-type='other'
+          className={`form-control password-masked-input${
+            !showPassword ? " is-masked" : ""
+          }${errors.password ? " is-invalid" : ""}`}
+          placeholder='Your password'
           onChange={(e) => {
             setPassword(e.target.value);
             if (errors.password) setErrors((p) => ({ ...p, password: "" }));
             if (apiMsg) setApiMsg(null);
           }}
+          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
           disabled={loading}
         />
         <button
@@ -155,7 +166,6 @@ const Login = ({ setUser }) => {
           onClick={() => setShowPassword((prev) => !prev)}
           aria-label={showPassword ? "Hide password" : "Show password"}
           title={showPassword ? "Hide password" : "Show password"}
-          tabIndex={-1}
         >
           <EyeIcon visible={showPassword} />
         </button>
@@ -168,7 +178,12 @@ const Login = ({ setUser }) => {
 
       <div className='auth-spacer' />
 
-      <button type='submit' className='auth-btn' disabled={loading}>
+      <button
+        type='button'
+        className='auth-btn'
+        onClick={handleLogin}
+        disabled={loading}
+      >
         {loading ? "Signing in…" : "Sign In"}
       </button>
 
@@ -177,7 +192,7 @@ const Login = ({ setUser }) => {
           {apiMsg}
         </p>
       )}
-    </form>
+    </div>
   );
 };
 

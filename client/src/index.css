@@ -99,6 +99,28 @@ body {
   min-height: 100dvh;
 }
 
+/* ===== Suppress duplicate native browser password icons ===== */
+input::-ms-reveal,
+input::-ms-clear,
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+.password-masked-input.is-masked {
+  -webkit-text-security: disc;
+  text-security: disc;
+}
+
 /* ===== Focus Accessibility ===== */
 :focus-visible {
   outline: 2px solid var(--color-primary);
@@ -139,6 +161,7 @@ body {
   color: var(--color-text) !important;
   border-radius: var(--radius-sm) !important;
   font-size: 0.9rem !important;
+  background-image: none !important;
   transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast) !important;
 }
 
@@ -157,6 +180,11 @@ body {
 .form-control.is-invalid {
   border-color: var(--color-danger) !important;
   background-image: none !important;
+  padding-right: 0.9rem !important;
+}
+
+.password-input-wrapper .form-control.is-invalid {
+  padding-right: 2.6rem !important;
 }
 
 .btn-success {
